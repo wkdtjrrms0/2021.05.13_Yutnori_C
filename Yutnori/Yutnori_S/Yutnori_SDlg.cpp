@@ -7,6 +7,7 @@
 #include "Yutnori_S.h"
 #include "Yutnori_SDlg.h"
 #include "afxdialogex.h"
+#include "CChildSocket.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -59,12 +60,14 @@ CYutnoriSDlg::CYutnoriSDlg(CWnd* pParent /*=nullptr*/)
 void CYutnoriSDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_EDIT1, m_ctrlEdit);
 }
 
 BEGIN_MESSAGE_MAP(CYutnoriSDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_EN_CHANGE(IDC_EDIT1, &CYutnoriSDlg::OnEnChangeEdit1)
 END_MESSAGE_MAP()
 
 
@@ -100,6 +103,14 @@ BOOL CYutnoriSDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	m_pListenSocket = new CListenSocket;
+	if (m_pListenSocket->Create(7000, SOCK_STREAM)) {
+		if (m_pListenSocket->Listen()) {
+			m_ctrlEdit.ReplaceSel(_T("[서버] Port(7000)이 Listen 소켓으로 열렸습니다.\r\n"));
+		}
+		else AfxMessageBox(_T("ERROR: Failed to LISTEN.")); //이미 포트가 열려있다.
+	}
+	else AfxMessageBox(_T("ERROR: Failed to create a listen socket.")); //ex. 메모리가 꽉찬경우
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -153,3 +164,29 @@ HCURSOR CYutnoriSDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+BOOL CYutnoriSDlg::DestroyWindow()
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	POSITION pos = m_pListenSocket->m_pChildSocketList.GetHeadPosition();
+	CChildSocket* pChild = NULL;
+	while (pos != NULL) {
+		pChild = (CChildSocket*)(m_pListenSocket->m_pChildSocketList.GetNext(pos));
+		if (pChild != NULL) { pChild->ShutDown(); pChild->Close(); delete pChild; }
+	}
+	m_pListenSocket->ShutDown(); //소켓중지(listen을 멈춤)
+	m_pListenSocket->Close(); // 소켓종료
+	delete m_pListenSocket; //소켓의 목록을 지움
+
+	return CDialogEx::DestroyWindow();
+}
+
+
+void CYutnoriSDlg::OnEnChangeEdit1()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// CDialogEx::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}

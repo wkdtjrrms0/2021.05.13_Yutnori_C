@@ -183,6 +183,8 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CChildSocket.h" />
+    <ClInclude Include="CListenSocket.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -191,6 +193,8 @@
     <ClInclude Include="Yutnori_SDlg.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CChildSocket.cpp" />
+    <ClCompile Include="CListenSocket.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

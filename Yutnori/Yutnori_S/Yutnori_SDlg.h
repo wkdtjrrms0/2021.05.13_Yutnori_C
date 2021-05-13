@@ -3,6 +3,8 @@
 //
 
 #pragma once
+#include "afxwin.h"
+#include "CListenSocket.h"
 
 
 // CYutnoriSDlg 대화 상자
@@ -31,4 +33,9 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnEnChangeEdit1();
+	CEdit m_ctrlEdit;
+	CListenSocket* m_pListenSocket;
+	virtual BOOL DestroyWindow();
 };
