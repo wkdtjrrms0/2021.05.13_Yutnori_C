@@ -53,6 +53,7 @@ END_MESSAGE_MAP()
 
 CYutnoriSDlg::CYutnoriSDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_YUTNORI_S_DIALOG, pParent)
+	, m_pListenSocket(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
