@@ -52,6 +52,9 @@ END_MESSAGE_MAP()
 
 CYutnoriCDlg::CYutnoriCDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_YUTNORI_C_DIALOG, pParent)
+	, m_strAddress(_T("127.0.0.1"))
+	, m_nPort(7000)
+	, m_strMessage(_T("안녕하세요?"))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -59,12 +62,20 @@ CYutnoriCDlg::CYutnoriCDlg(CWnd* pParent /*=nullptr*/)
 void CYutnoriCDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Text(pDX, IDC_EDIT1, m_strAddress);
+	DDX_Text(pDX, IDC_EDIT2, m_nPort);
+	DDX_Control(pDX, IDC_EDIT3, m_ctrlEdit);
+	DDX_Text(pDX, IDC_EDIT4, m_strMessage);
 }
 
 BEGIN_MESSAGE_MAP(CYutnoriCDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_EN_CHANGE(IDC_EDIT1, &CYutnoriCDlg::OnEnChangeEdit1)
+	ON_EN_CHANGE(IDC_EDIT2, &CYutnoriCDlg::OnEnChangeEdit2)
+	ON_EN_CHANGE(IDC_EDIT4, &CYutnoriCDlg::OnEnChangeEdit4)
+	ON_BN_CLICKED(IDC_BUTTON1, &CYutnoriCDlg::OnBnClickedConnect)
 END_MESSAGE_MAP()
 
 
@@ -153,3 +164,73 @@ HCURSOR CYutnoriCDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CYutnoriCDlg::OnEnChangeEdit1()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// CDialogEx::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CYutnoriCDlg::OnEnChangeEdit2()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// CDialogEx::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CYutnoriCDlg::OnEnChangeEdit4()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// CDialogEx::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CYutnoriCDlg::OnBnClickedConnect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	m_pClientSocket = new CClientSocket;
+	m_pClientSocket->Create();
+	CString str; str.Format(_T("[나] 서버(%s:%d)와 연결합니다.....\r\n"), m_strAddress, m_nPort);
+	m_ctrlEdit.ReplaceSel(str);
+	this->UpdateData(TRUE); //컨트롤에 입력된 내용을 멤버변수에 넣는다.
+	bool success = m_pClientSocket->Connect(m_strAddress, m_nPort);
+	if (!success) m_ctrlEdit.ReplaceSel(_T("[error] 서버와 연결하지 못했습니다.\r\n"));
+
+}
+
+
+BOOL CYutnoriCDlg::DestroyWindow()
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	m_pClientSocket->ShutDown();
+	m_pClientSocket->Close();
+	delete m_pClientSocket;
+	return CDialogEx::DestroyWindow();
+}
+
+
+void CYutnoriCDlg::OnOK()
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	this->UpdateData(TRUE);; //데이터를 갱신한다.
+	m_strMessage.Append(_T("\r\n")); //줄 바꿈 코드를 추가한다.
+	m_pClientSocket->Send(m_strMessage, m_strMessage.GetLength());
+	m_strMessage = _T(""); //내용을 삭제한다.
+	this->UpdateData(FALSE); //화면을 갱신한다.
+
+	//CDialogEx::OnOK(); //프로그램이 종료되는 것을 방지한다.
+}
