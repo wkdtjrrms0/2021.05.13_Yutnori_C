@@ -3,7 +3,7 @@
 //
 
 #pragma once
-
+#include "CClientSocket.h"
 
 // CYutnoriCDlg 대화 상자
 class CYutnoriCDlg : public CDialogEx
@@ -31,4 +31,16 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnEnChangeEdit1();
+	afx_msg void OnEnChangeEdit2();
+	afx_msg void OnEnChangeEdit4();
+	CString m_strAddress;
+	int m_nPort;
+	CEdit m_ctrlEdit;
+	CString m_strMessage;
+	CClientSocket* m_pClientSocket;
+	afx_msg void OnBnClickedConnect();
+	virtual BOOL DestroyWindow();
+	virtual void OnOK();
 };
