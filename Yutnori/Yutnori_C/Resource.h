@@ -7,7 +7,11 @@
 #define IDS_ABOUTBOX                    101
 #define IDD_YUTNORI_C_DIALOG            102
 #define IDP_SOCKETS_INIT_FAILED         103
+#define IDR_HTML_CNaverOAuthDlg         104
 #define IDR_MAINFRAME                   128
+#define IDD_YUTNORI_START               130
+#define IDD_DIALOG1                     133
+#define IDD_NAVEROAUTH_DIALOG           133
 #define IDC_EDIT1                       1000
 #define IDC_EDIT2                       1001
 #define IDC_EDIT3                       1002
@@ -21,9 +25,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        130
+#define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1008
-#define _APS_NEXT_SYMED_VALUE           101
+#define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

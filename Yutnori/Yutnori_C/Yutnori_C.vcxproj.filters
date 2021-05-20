@@ -36,6 +36,12 @@
     <ClInclude Include="CClientSocket.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="CYutnoriStart.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="CNaverOAuthDlg.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Yutnori_C.cpp">
@@ -50,6 +56,12 @@
     <ClCompile Include="CClientSocket.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="CYutnoriStart.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CNaverOAuthDlg.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="YutnoriC.rc">
@@ -60,6 +72,7 @@
     <None Include="res\YutnoriC.rc2">
       <Filter>리소스 파일</Filter>
     </None>
+    <None Include="CNaverOAuthDlg.htm" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Yutnori_C.ico">
