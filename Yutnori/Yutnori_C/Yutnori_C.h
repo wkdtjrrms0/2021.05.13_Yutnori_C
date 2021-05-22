@@ -27,6 +27,7 @@ public:
 // 구현입니다.
 
 	DECLARE_MESSAGE_MAP()
+//	int Islogin = 0;
 };
 
 extern CYutnoriCApp theApp;

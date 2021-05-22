@@ -45,6 +45,8 @@ public:
 	BOOL CallbackUrlExtractHtml(LPDISPATCH pDisp, LPCTSTR szUrl);
 	CString ExtractUrl(LPCTSTR szUrl);
 	CString FindCode(LPCTSTR szUrl);
+	CString FindToken(LPCTSTR szUrl);
+	CString FindTokenType(LPCTSTR szUrl);
 	CString GetRequestUrl() { return m_RequestURl; }
 	CString GetResultCode() { return m_ResultCode; }
 	CString GetCode() { return m_Code; }
@@ -52,4 +54,12 @@ public:
 	CString m_Token;
 	CString UserID;
 	CString UserNick;
+	void ReadJson(CString gettokenUrl);
+	CString m_ReadJson;
+	int IsLogin; //0은 로그인 성공 전, 1은 로그인 성공 후, -1은 로그아웃 후
+	int logincount; // 로그인 시도횟수를 카운트합니다.
+	void login(); //로그인
+	void logout(); //로그아웃
+	CString m_TokenType;
+	
 };

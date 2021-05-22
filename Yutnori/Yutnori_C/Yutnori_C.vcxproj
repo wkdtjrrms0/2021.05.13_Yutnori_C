@@ -217,6 +217,11 @@
     <None Include="res\YutnoriC.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\..\test.bmp" />
+    <Image Include="..\..\..\..\윷놀이.jpg" />
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\bitmap2.bmp" />
+    <Image Include="res\test.bmp" />
     <Image Include="res\Yutnori_C.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
