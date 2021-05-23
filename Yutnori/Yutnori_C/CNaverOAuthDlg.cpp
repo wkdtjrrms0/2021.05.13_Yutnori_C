@@ -1,5 +1,4 @@
-﻿// CNaverOAuthDlg.cpp: 구현 파일
-//
+﻿// CNaverOAuthDlg.cpp: 구현 파일//
 
 #include "pch.h"
 #include "Yutnori_C.h"
@@ -8,12 +7,7 @@
 #include <string>
 #include "CYutnoriStart.h"
 #include <atlstr.h>
-
 #include "locale.h"
-#include <iostream>
-#include <algorithm>
-#include <cassert>
-#include < atlBase.h >
 
 #define CALLBACK_URL _T("http://127.0.0.1/")
 #define REDIRECT_URL _T("http%3A%2F%2F127.0.0.1")
@@ -21,19 +15,15 @@
 #define CONSUMER_CLIENT_SECRET _T("9qTBDtIsaf")
 #define NAVER_AUTH_URL _T("https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=%s&redirect_uri=%s&state=%s") //로그인
 #define GET_TOKEN_URL _T("https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&state=%s") //토큰발급
-#define REFRESH_TOKEN_URL _T("https://nid.naver.com/oauth2.0/token?grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s") //토큰갱신
-#define DELETE_TOKEN_URL _T("https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=%s&client_secret=%s&access_token=%s&service_provider=NAVER") //토큰삭제
-
+#define REFRESH_TOKEN_URL _T("https://nid.naver.com/oauth2.0/token?grant_type=refresh_token&client_id=%s&client_secret=%s&refresh_token=%s") //토큰갱신-사용안함
+#define DELETE_TOKEN_URL _T("https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id=%s&client_secret=%s&access_token=%s&service_provider=NAVER") //토큰삭제-사용안함
 
 // CNaverOAuthDlg 대화 상자
-
 IMPLEMENT_DYNCREATE(CNaverOAuthDlg, CDHtmlDialog)
-
 BEGIN_DHTML_EVENT_MAP(CNaverOAuthDlg)
-	DHTML_EVENT_ONCLICK(_T("ButtonOK"), OnButtonOK)
-	DHTML_EVENT_ONCLICK(_T("ButtonCancel"), OnButtonCancel)
 END_DHTML_EVENT_MAP()
 
+/*생성자*/
 CNaverOAuthDlg::CNaverOAuthDlg(CWnd* pParent /*=nullptr*/)
 	: CDHtmlDialog(IDD_NAVEROAUTH_DIALOG, 104, pParent)
 {
@@ -53,16 +43,9 @@ CNaverOAuthDlg::CNaverOAuthDlg(CWnd* pParent /*=nullptr*/)
 	m_NaverID = _T("");
 	m_NaverNickName = _T("");
 }
-
-CNaverOAuthDlg::~CNaverOAuthDlg()
-{
-}
-
-void CNaverOAuthDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDHtmlDialog::DoDataExchange(pDX);
-}
-
+/*소멸자*/
+CNaverOAuthDlg::~CNaverOAuthDlg(){}
+/*가장 먼저 호출*/
 BOOL CNaverOAuthDlg::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
@@ -74,171 +57,84 @@ BOOL CNaverOAuthDlg::OnInitDialog()
 BEGIN_MESSAGE_MAP(CNaverOAuthDlg, CDHtmlDialog)
 END_MESSAGE_MAP()
 
-
-
-
-
-// CNaverOAuthDlg 메시지 처리기
-
-HRESULT CNaverOAuthDlg::OnButtonOK(IHTMLElement* /*pElement*/)
-{
-	OnOK();
-	return S_OK;
-}
-
-HRESULT CNaverOAuthDlg::OnButtonCancel(IHTMLElement* /*pElement*/)
-{
-	OnCancel();
-	return S_OK;
-}
-
+/*Navigate가 완료되면 호출*/
 void CNaverOAuthDlg::OnNavigateComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
 	CDHtmlDialog::OnNavigateComplete(pDisp, szUrl);
 	if (CallbackUrlExtractHtml(pDisp, szUrl) == TRUE)
 		EndDialog(IDOK);
-
 }
-
-
-
-void CNaverOAuthDlg::OnDocumentComplete(LPDISPATCH pDisp, LPCTSTR szUrl)
-{
-	CDHtmlDialog::OnDocumentComplete(pDisp, szUrl);
-}
-
-
-CString CNaverOAuthDlg::ExtractUrl(LPCTSTR szUrl) //메인도메인만 뽑기위해
+/*url에서 메인도메인만 찾는다.*/
+CString CNaverOAuthDlg::ExtractUrl(LPCTSTR szUrl)
 {
 	CString extractUrl(szUrl);
-
 	int findIndex = extractUrl.Find('?');
-	if (findIndex <= 0)
-	{
-		return _T("");
-	}
+	if (findIndex <= 0){return _T("");}
 	extractUrl = extractUrl.Left(findIndex);
 	return extractUrl;
 }
-
-CString CNaverOAuthDlg::FindCode(LPCTSTR szUrl) //url의 코드값을 뽑기위해
+/*url에서 코드를 찾는다.*/
+CString CNaverOAuthDlg::FindCode(LPCTSTR szUrl)
 {
 	CString findcode(szUrl);
-
 	int findIndexR = findcode.Find('&');
-	if (findIndexR <= 0)
-	{
-		return _T("");
-	}
+	if (findIndexR <= 0){return _T("");}
 	findcode = findcode.Left(findIndexR);
 	int findIndexL = findcode.Find('=');
-	if (findIndexL <= 0)
-	{
-		return _T("");
-	}
+	if (findIndexL <= 0){return _T("");}
 	findcode = findcode.Right(findIndexR - findIndexL - 1);
-
-	if (findcode == "access_denied") {
-		return "clickCancel";
-	}
-
+	if (findcode == "access_denied") {return "clickCancel";}
 	return findcode;
 }
-
-CString CNaverOAuthDlg::FindToken(LPCTSTR szUrl) //url의 토큰값을 뽑기위해
+/*Json문자열에서 토큰을 찾는다.*/
+CString CNaverOAuthDlg::FindToken(LPCTSTR szUrl)
 {
 	CString findtoken(szUrl);
-
 	int findIndexR = findtoken.Find("refresh_token") - 3;
-	if (findIndexR <= 0)
-	{
-		return _T("invalid_request");
-	}
+	if (findIndexR <= 0){return _T("invalid_request");}
 	findtoken = findtoken.Left(findIndexR);
-
-
-
 	int findIndexL = findtoken.Find("access_token") + 14;
-	if (findIndexL <= 0)
-	{
-		return _T("invalid_request");
-	}
+	if (findIndexL <= 0){return _T("invalid_request");}
 	findtoken = findtoken.Right(findIndexR - findIndexL - 1);
-
-
 	return findtoken;
 }
-CString CNaverOAuthDlg::FindTokenType(LPCTSTR szUrl) //url의 토큰타입을 뽑기위해
+/*Json문자열에서 토큰타입을 찾는다.*/
+CString CNaverOAuthDlg::FindTokenType(LPCTSTR szUrl)
 {
 	CString findtokentype(szUrl);
-
 	int findIndexR = findtokentype.Find("expires_in") - 3;
-	if (findIndexR <= 0)
-	{
-		return _T("invalid_request");
-	}
+	if (findIndexR <= 0){return _T("invalid_request");}
 	findtokentype = findtokentype.Left(findIndexR);
-
-
-
 	int findIndexL = findtokentype.Find("token_type") + 12;
-	if (findIndexL <= 0)
-	{
-		return _T("invalid_request");
-	}
+	if (findIndexL <= 0){return _T("invalid_request");}
 	findtokentype = findtokentype.Right(findIndexR - findIndexL - 1);
-
-
 	return findtokentype;
 }
-
-CString CNaverOAuthDlg::FindNaverID(LPCTSTR szUrl) //json형태의 데이터에서 네이버ID값만 뽑는다.
+/*Json문자열에서 유니크한 네이버ID만 찾는다.*/
+CString CNaverOAuthDlg::FindNaverID(LPCTSTR szUrl)
 {
 	CString findnaverid(szUrl);
-
 	int findIndexR = findnaverid.Find("nickname") - 3;
-	if (findIndexR <= 0)
-	{
-		return _T("invalid_request");
-	}
+	if (findIndexR <= 0){return _T("invalid_request");}
 	findnaverid = findnaverid.Left(findIndexR);
-
 	int findIndexL = findnaverid.Find("id") + 4;
-	if (findIndexL <= 0)
-	{
-		return _T("invalid_request");
-	}
+	if (findIndexL <= 0){return _T("invalid_request");}
 	findnaverid = findnaverid.Right(findIndexR - findIndexL - 1);
-
-
 	return findnaverid;
 }
-
-CString CNaverOAuthDlg::FindNaverNickName(LPCTSTR szUrl) //json형태의 데이터에서 네이버닉네임값만 뽑는다.
+/*Json문자열에서 네이버별명만 찾는다.*/
+CString CNaverOAuthDlg::FindNaverNickName(LPCTSTR szUrl)
 {
 	CString findnavernickname(szUrl);
-
 	int findIndexR = findnavernickname.Find("}}") - 1;
-	if (findIndexR <= 0)
-	{
-		return _T("invalid_request");
-	}
+	if (findIndexR <= 0){return _T("invalid_request");}
 	findnavernickname = findnavernickname.Left(findIndexR);
-
-
 	int findIndexL = findnavernickname.Find("nickname") + 10;
-	if (findIndexL <= 0)
-	{
-		return _T("invalid_request");
-	}
+	if (findIndexL <= 0){return _T("invalid_request");}
 	findnavernickname = findnavernickname.Right(findIndexR - findIndexL - 1);
-
-
 	return findnavernickname;
 }
-
-
-
+/*로그인페이지 이동(2)*/
 BOOL CNaverOAuthDlg::CallbackUrlExtractHtml(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
 	CString szCallBackUrl(CALLBACK_URL);
@@ -248,7 +144,6 @@ BOOL CNaverOAuthDlg::CallbackUrlExtractHtml(LPDISPATCH pDisp, LPCTSTR szUrl)
 		CString m_Code = FindCode(szUrl);
 		if (m_Code == "clickCancel") { EndDialog(IDOK); 
 		} //예외처리(취소버튼을 누를시)
-
 		CString gettokenUrl;
 		gettokenUrl.Format(GET_TOKEN_URL, CONSUMER_CLIENT_ID, CONSUMER_CLIENT_SECRET, m_Code, m_strStateCode);
 		ReadJson(gettokenUrl); //토큰발급
@@ -258,43 +153,36 @@ BOOL CNaverOAuthDlg::CallbackUrlExtractHtml(LPDISPATCH pDisp, LPCTSTR szUrl)
 		m_NaverID = FindNaverID(m_finaljson);
 		m_NaverNickName = FindNaverNickName(m_finaljson);
 		AfxMessageBox(m_finaljson);
-
 		return TRUE;
 	}
 	else
 		return FALSE;
 }
-
+/*Json으로 온 토큰값을 읽는 함수*/
 void CNaverOAuthDlg::ReadJson(CString gettokenUrl)
 {
-	// JSON읽는 함수
 	UpdateData(TRUE); // 세션이 연결된 이후, 웹 사이트의 Html 정보가 변경된 사항을 가져올 경우 
-	CInternetSession session(NULL, 1, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, INTERNET_FLAG_DONT_CACHE);
-	try { // 세션 클래스를 이용하여 열기 
-		CInternetFile* pinetFile = (CInternetFile*)session.OpenURL(gettokenUrl);
-		if (NULL != pinetFile) {
-			char acRead[40960] = { 0, }; // return 값이 길 수 있으므로 충분히 입력 
-			memset(acRead, 0, sizeof(acRead)); // json 읽는 부분 
-			UINT uiTotalRead = 0; int iIdex = 0; do { // 데이터를 1024씩 읽어 온다. 
-				uiTotalRead = pinetFile->Read(&acRead[iIdex], 1024);
-				if (uiTotalRead <= 0) break; iIdex += uiTotalRead;
-			} while (uiTotalRead > 0); // 읽은 json 표시를 위한 부분 
-			std::string strJson = acRead;
-			m_ReadJson = CA2W(strJson.c_str(), CP_UTF8);
-			pinetFile->Close(); // Html 파일을 닫는다. 
-			session.Close(); // 세션 종료 
-			delete pinetFile; // Html 파일 읽기에 사용한 객체를 파괴 
-			IsLogin = 1;
-			logincount++;
-		}
+	CInternetSession session(NULL, 1, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, INTERNET_FLAG_DONT_CACHE); // 세션 클래스를 이용하여 열기 
+	CInternetFile* pinetFile = (CInternetFile*)session.OpenURL(gettokenUrl);
+	if (NULL != pinetFile) {
+		char acRead[40960] = { 0, }; // return 값이 길 수 있으므로 충분히 입력 
+		memset(acRead, 0, sizeof(acRead)); // json 읽는 부분 
+		UINT uiTotalRead = 0; int iIdex = 0; do { // 데이터를 1024씩 읽어 온다. 
+			uiTotalRead = pinetFile->Read(&acRead[iIdex], 1024);
+			if (uiTotalRead <= 0) break; iIdex += uiTotalRead;
+		} while (uiTotalRead > 0); // 읽은 json 표시를 위한 부분 
+		std::string strJson = acRead;
+		m_ReadJson = CA2W(strJson.c_str(), CP_UTF8);
+		pinetFile->Close(); // Html 파일을 닫는다. 
+		session.Close(); // 세션 종료 
+		delete pinetFile; // Html 파일 읽기에 사용한 객체를 파괴 
+		IsLogin = 1;
+		logincount++;
 	}
-	catch (CInternetException* e) { // 에러 
-	} UpdateData(FALSE);
 }
-
+/*로그인페이지 이동(1)*/
 void CNaverOAuthDlg::login()
 {
-	// 로그인페이지 이동
 	m_strStateCode.Format(_T("%d"), GetTickCount());
 	CString sAuthUrl;
 	sAuthUrl.Format(NAVER_AUTH_URL, CONSUMER_CLIENT_ID, REDIRECT_URL, m_strStateCode);
@@ -303,21 +191,14 @@ void CNaverOAuthDlg::login()
 	varTarget = "_self";
 	HRESULT hr = m_pBrowserApp->Navigate(sAuthUrl.AllocSysString(), &varFlags, &varTarget, &vtPost, &varHeader);
 }
-
+/*로그아웃*/
 void CNaverOAuthDlg::logout()
 {
-	// 로그아웃
-	CString sAuthUrl;
-	sAuthUrl.Format(DELETE_TOKEN_URL, CONSUMER_CLIENT_ID, CONSUMER_CLIENT_SECRET, m_Token);
-	SetRequestUrl(sAuthUrl);
-	CComVariant varFlags, varHeader, varTarget, vtPost;
-	varTarget = "_self";
 	Navigate("http://nid.naver.com/nidlogin.logout", 0, "_self", NULL, NULL);
-	//HRESULT hr = m_pBrowserApp->Navigate(sAuthUrl.AllocSysString(), &varFlags, &varTarget, &vtPost, &varHeader);
 	IsLogin = -1;
 	logincount++;
 }
-
+/*유저정보조회 APi호출*/
 BOOL CNaverOAuthDlg::CallApi()
 {
 	BOOL bRet = FALSE;

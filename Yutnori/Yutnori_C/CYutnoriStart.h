@@ -25,6 +25,5 @@ public:
 	afx_msg void OnClickedButton2();
 	afx_msg void OnBnClickedButton3();
 	CStatic m_Myicon;
-	afx_msg void OnStnClickedPicture();
 	int SelectOAuth; //로그인할지 토큰을 삭제할지 결정합니다. 
 };
