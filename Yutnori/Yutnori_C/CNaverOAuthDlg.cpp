@@ -45,7 +45,7 @@ CNaverOAuthDlg::CNaverOAuthDlg(CWnd* pParent /*=nullptr*/)
 }
 /*소멸자*/
 CNaverOAuthDlg::~CNaverOAuthDlg(){}
-/*가장 먼저 호출*/
+/*가장 먼저 호출, 로그인 시도횟수를 파악하여 login(), logout()함수를 호출*/
 BOOL CNaverOAuthDlg::OnInitDialog()
 {
 	CDHtmlDialog::OnInitDialog();
