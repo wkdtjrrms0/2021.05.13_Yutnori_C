@@ -4,10 +4,16 @@
 #include "pch.h"
 #include "Yutnori_C.h"
 #include "CNaverOAuthDlg.h"
-#include "rapidjson\document.h"
 #include <afxinet.h> 
 #include <string>
 #include "CYutnoriStart.h"
+#include <atlstr.h>
+
+#include "locale.h"
+#include <iostream>
+#include <algorithm>
+#include <cassert>
+#include < atlBase.h >
 
 #define CALLBACK_URL _T("http://127.0.0.1/")
 #define REDIRECT_URL _T("http%3A%2F%2F127.0.0.1")
@@ -43,6 +49,9 @@ CNaverOAuthDlg::CNaverOAuthDlg(CWnd* pParent /*=nullptr*/)
 	IsLogin = 0;
 	logincount = 0;
 	m_TokenType = _T("");
+	m_finaljson = _T("");
+	m_NaverID = _T("");
+	m_NaverNickName = _T("");
 }
 
 CNaverOAuthDlg::~CNaverOAuthDlg()
@@ -183,11 +192,53 @@ CString CNaverOAuthDlg::FindTokenType(LPCTSTR szUrl) //url의 토큰타입을 �
 	return findtokentype;
 }
 
+CString CNaverOAuthDlg::FindNaverID(LPCTSTR szUrl) //json형태의 데이터에서 네이버ID값만 뽑는다.
+{
+	CString findnaverid(szUrl);
 
-/*=============================================================================
-IWebBrowser2 객체로부터 브라우저의 Document를 얻고, Document에서 태그에 대한
-객체에 접근해서 CallBack 페이지에서 전달된 json 데이타를 얻어 오는 함수----미완성, 토큰으로 json이 출력되는 url을 여는부분까지확인
-===============================================================================*/
+	int findIndexR = findnaverid.Find("nickname") - 3;
+	if (findIndexR <= 0)
+	{
+		return _T("invalid_request");
+	}
+	findnaverid = findnaverid.Left(findIndexR);
+
+	int findIndexL = findnaverid.Find("id") + 4;
+	if (findIndexL <= 0)
+	{
+		return _T("invalid_request");
+	}
+	findnaverid = findnaverid.Right(findIndexR - findIndexL - 1);
+
+
+	return findnaverid;
+}
+
+CString CNaverOAuthDlg::FindNaverNickName(LPCTSTR szUrl) //json형태의 데이터에서 네이버닉네임값만 뽑는다.
+{
+	CString findnavernickname(szUrl);
+
+	int findIndexR = findnavernickname.Find("}}") - 1;
+	if (findIndexR <= 0)
+	{
+		return _T("invalid_request");
+	}
+	findnavernickname = findnavernickname.Left(findIndexR);
+
+
+	int findIndexL = findnavernickname.Find("nickname") + 10;
+	if (findIndexL <= 0)
+	{
+		return _T("invalid_request");
+	}
+	findnavernickname = findnavernickname.Right(findIndexR - findIndexL - 1);
+
+
+	return findnavernickname;
+}
+
+
+
 BOOL CNaverOAuthDlg::CallbackUrlExtractHtml(LPDISPATCH pDisp, LPCTSTR szUrl)
 {
 	CString szCallBackUrl(CALLBACK_URL);
@@ -203,8 +254,11 @@ BOOL CNaverOAuthDlg::CallbackUrlExtractHtml(LPDISPATCH pDisp, LPCTSTR szUrl)
 		ReadJson(gettokenUrl); //토큰발급
 		m_Token = FindToken(m_ReadJson); //json의 토큰값을 얻기 위해
 		m_TokenType = FindTokenType(m_ReadJson); //json의 토큰타입을 얻기 위해
+		CallApi();
+		m_NaverID = FindNaverID(m_finaljson);
+		m_NaverNickName = FindNaverNickName(m_finaljson);
+		AfxMessageBox(m_finaljson);
 
-		
 		return TRUE;
 	}
 	else
@@ -264,3 +318,77 @@ void CNaverOAuthDlg::logout()
 	logincount++;
 }
 
+BOOL CNaverOAuthDlg::CallApi()
+{
+	BOOL bRet = FALSE;
+	DWORD dwSearviceType;
+	CString strServer = _T(""), strObject = _T("");
+	CInternetSession Session;
+	CHttpConnection* pServer = NULL;
+	CHttpFile* pFile = NULL;
+	INTERNET_PORT nPort;
+	CString token = _T("Authorization: Bearer " + m_Token + "\r\n");
+	setlocale(LC_ALL, "");
+
+	if (!AfxParseURL(_T("https://openapi.naver.com/v1/nid/me"), dwSearviceType, strServer, strObject, nPort))
+	{
+		ASSERT(0);
+		return bRet;
+	}
+	try
+	{
+		if (dwSearviceType == AFX_INET_SERVICE_HTTPS)
+		{
+			pServer = Session.GetHttpConnection(strServer, INTERNET_OPEN_TYPE_PRECONFIG, nPort);
+			pFile = pServer->OpenRequest(CHttpConnection::HTTP_VERB_POST, strObject, NULL, 0, NULL, NULL, INTERNET_FLAG_RELOAD | INTERNET_FLAG_KEEP_CONNECTION | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_SECURE | INTERNET_FLAG_IGNORE_CERT_CN_INVALID);
+		}
+		else
+		{
+			pServer = Session.GetHttpConnection(strServer, nPort);
+			pFile = pServer->OpenRequest(CHttpConnection::HTTP_VERB_GET, strObject);
+		}
+		// 쿼리 Request 파라미터
+		pFile->AddRequestHeaders(_T("GET v1/nid/me HTTP/1.1\r\n"));
+		pFile->AddRequestHeaders(_T("Host: openapi.naver.com\r\n"));
+		pFile->AddRequestHeaders(_T(token));
+
+		// 쿼리 Request
+		pFile->SendRequest(NULL, 0);
+	}
+	catch (CInternetException* e)
+	{
+		TCHAR szError[256] = { 0, };
+		e->GetErrorMessage(szError, 255);
+		e->Delete();
+		return bRet;
+	}
+	// 결과 받아오기
+	int nFileLen = pFile->GetLength();
+	char* szBuff = new char[nFileLen + 1];
+	ZeroMemory(szBuff, nFileLen + 1);
+	pFile->SetReadBufferSize(nFileLen);
+	DWORD dwReadSize = pFile->Read((void*)szBuff, nFileLen);
+	
+	m_finaljson = szBuff;
+
+	// 소멸
+	delete[] szBuff;
+
+	if (pFile)
+	{
+		pFile->Close();
+		delete pFile;
+		pFile = NULL;
+	}
+
+	if (pServer)
+	{
+		pServer->Close();
+		delete pServer;
+		pServer = NULL;
+	}
+
+	Session.Close();
+
+	return TRUE;
+}

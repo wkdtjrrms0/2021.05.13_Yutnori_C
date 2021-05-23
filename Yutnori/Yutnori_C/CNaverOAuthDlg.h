@@ -47,6 +47,8 @@ public:
 	CString FindCode(LPCTSTR szUrl);
 	CString FindToken(LPCTSTR szUrl);
 	CString FindTokenType(LPCTSTR szUrl);
+	CString FindNaverID(LPCTSTR szUrl);
+	CString FindNaverNickName(LPCTSTR szUrl);
 	CString GetRequestUrl() { return m_RequestURl; }
 	CString GetResultCode() { return m_ResultCode; }
 	CString GetCode() { return m_Code; }
@@ -61,5 +63,8 @@ public:
 	void login(); //로그인
 	void logout(); //로그아웃
 	CString m_TokenType;
-	
+	BOOL CallApi();
+	CString m_finaljson;
+	CString m_NaverID;
+	CString m_NaverNickName;
 };
