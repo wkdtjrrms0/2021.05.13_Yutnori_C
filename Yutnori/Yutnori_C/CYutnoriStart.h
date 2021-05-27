@@ -18,6 +18,7 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
+	HICON m_hIcon;
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -26,4 +27,5 @@ public:
 	afx_msg void OnBnClickedButton3();
 	CStatic m_Myicon;
 	int SelectOAuth; //로그인할지 토큰을 삭제할지 결정합니다. 
+	afx_msg void OnPaint();
 };
