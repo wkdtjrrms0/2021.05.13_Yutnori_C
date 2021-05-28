@@ -26,6 +26,6 @@ public:
 	afx_msg void OnClickedButton2();
 	afx_msg void OnBnClickedButton3();
 	CStatic m_Myicon;
-	int SelectOAuth; //로그인할지 토큰을 삭제할지 결정합니다. 
+	int SelectOAuth; //로그인, 로그아웃 상태를 저장하는 변수합니다. 
 	afx_msg void OnPaint();
 };

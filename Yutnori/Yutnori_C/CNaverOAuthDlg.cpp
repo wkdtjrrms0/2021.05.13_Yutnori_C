@@ -152,7 +152,6 @@ BOOL CNaverOAuthDlg::CallbackUrlExtractHtml(LPDISPATCH pDisp, LPCTSTR szUrl)
 		CallApi();
 		m_NaverID = FindNaverID(m_finaljson);
 		m_NaverNickName = FindNaverNickName(m_finaljson);
-		AfxMessageBox(m_finaljson);
 		return TRUE;
 	}
 	else
@@ -249,7 +248,6 @@ BOOL CNaverOAuthDlg::CallApi()
 	ZeroMemory(szBuff, nFileLen + 1);
 	pFile->SetReadBufferSize(nFileLen);
 	DWORD dwReadSize = pFile->Read((void*)szBuff, nFileLen);
-	
 	m_finaljson = szBuff;
 
 	// 소멸

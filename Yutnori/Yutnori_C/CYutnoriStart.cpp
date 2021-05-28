@@ -7,6 +7,9 @@
 #include "afxdialogex.h"
 #include "CNaverOAuthDlg.h"
 #include <atlimage.h>
+#include "CBoardDlg.h"
+#include "CClientSocket.h"
+#include "Yutnori_CDlg.h"
 
 // CYutnoriStart 대화 상자
 
@@ -46,13 +49,14 @@ void CYutnoriStart::OnClickedButton1()
 		dlg.DoModal();
 		if (dlg.IsLogin == 1) { //로그인 성공시
 			SetDlgItemText(IDC_BUTTON1, _T("로그아웃"));
+			SetDlgItemText(IDC_STATIC, _T(dlg.m_NaverNickName + "님 \n 반갑습니다."));
 			SelectOAuth = 1;
 		}
 	} // 로그인
 	else if(dlg.IsLogin == 1){ //로그인 되어있을 때 실행 
 		dlg.DoModal();
 		SetDlgItemText(IDC_BUTTON1, _T("로그인"));
-
+		SetDlgItemText(IDC_STATIC, _T("게임이용을 위해 로그인을 해주시기 바랍니다."));
 		SelectOAuth = -1;
 	} // 로그아웃
 }
@@ -60,14 +64,25 @@ void CYutnoriStart::OnClickedButton1()
 
 void CYutnoriStart::OnClickedButton2()
 {
-	AfxMessageBox("준비중입니다.");
+	if (SelectOAuth == 1) {
+		AfxMessageBox("준비중입니다.");
+	}
+	else {
+		AfxMessageBox("로그인을 해주시기 바랍니다.");
+	}
 	// 랭킹 조회
 }
 
 
 void CYutnoriStart::OnBnClickedButton3()
 {
-	AfxMessageBox("준비중입니다.");
+	if (SelectOAuth == 1) {
+		CYutnoriCDlg dlg1;
+		dlg1.DoModal();
+	}
+	else {
+		AfxMessageBox("로그인을 해주시기 바랍니다.");
+	}
 	// 게임 시작
 }
 
@@ -102,7 +117,7 @@ void CYutnoriStart::OnPaint()
 		int nHeight = bitmap.bmHeight;
 		CDC memDC; memDC.CreateCompatibleDC(pDC);
 		memDC.SelectObject(&bmpBack);
-		pDC->BitBlt(10, 10, nWidth, nHeight, &memDC, 0, 0, SRCCOPY);
+		pDC->BitBlt(10, 10, 5000, nHeight, &memDC, 0, 0, SRCCOPY);
 		memDC.DeleteDC();
 		bmpBack.DeleteObject();
 		CDialog::OnPaint();
