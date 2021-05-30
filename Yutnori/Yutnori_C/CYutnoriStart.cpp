@@ -10,6 +10,7 @@
 #include "CBoardDlg.h"
 #include "CClientSocket.h"
 #include "Yutnori_CDlg.h"
+#include "CYutnoriBoard.h"
 
 // CYutnoriStart 대화 상자
 
@@ -77,11 +78,13 @@ void CYutnoriStart::OnClickedButton2()
 void CYutnoriStart::OnBnClickedButton3()
 {
 	if (SelectOAuth == 1) {
-		CYutnoriCDlg dlg1;
-		dlg1.DoModal();
+		CYutnoriBoard dlg;
+		dlg.DoModal();
 	}
 	else {
-		AfxMessageBox("로그인을 해주시기 바랍니다.");
+		CYutnoriBoard dlg; // 테스트 종료시 비활성화
+		dlg.DoModal(); // 테스트 종료시 비활성화
+		//AfxMessageBox("로그인을 해주시기 바랍니다.");  테스트 종료시 활성화
 	}
 	// 게임 시작
 }
@@ -117,7 +120,7 @@ void CYutnoriStart::OnPaint()
 		int nHeight = bitmap.bmHeight;
 		CDC memDC; memDC.CreateCompatibleDC(pDC);
 		memDC.SelectObject(&bmpBack);
-		pDC->BitBlt(10, 10, 5000, nHeight, &memDC, 0, 0, SRCCOPY);
+		pDC->BitBlt(10, 10, nWidth, nHeight, &memDC, 0, 0, SRCCOPY);
 		memDC.DeleteDC();
 		bmpBack.DeleteObject();
 		CDialog::OnPaint();
