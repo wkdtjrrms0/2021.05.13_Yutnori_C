@@ -40,7 +40,8 @@ void CChildSocket::OnReceive(int nErrorCode)
 	default:
 		//수신한 메시지를 화면에 보여준다.
 		szBuffer[nRead] = _T('\0');
-		CString str; str.Format(_T("[%s:%u] %s"), strIPAddress, uPortNumber, szBuffer);
+		CString str; str.Format(_T("%s"), szBuffer);
+		CString nickname = FindNickName(str);
 		CYutnoriSDlg* pMain = (CYutnoriSDlg*)AfxGetMainWnd();
 		pMain->m_ctrlEdit.ReplaceSel(str);
 
@@ -50,4 +51,13 @@ void CChildSocket::OnReceive(int nErrorCode)
 
 
 	CSocket::OnReceive(nErrorCode);
+}
+
+CString CChildSocket::FindNickName(LPCTSTR szUrl)
+{
+	CString findnickname(szUrl);
+	int findIndexR = findnickname.Find(": ");
+	if (findIndexR <= 0) { return _T("invalid_request"); }
+	findnickname = findnickname.Left(findIndexR);
+	return findnickname;
 }

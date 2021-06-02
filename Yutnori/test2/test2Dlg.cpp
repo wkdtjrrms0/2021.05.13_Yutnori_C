@@ -102,10 +102,6 @@ BOOL Ctest2Dlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
-	pointXYTTT dlg;
-	dlg.pointXY1
-
-
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }

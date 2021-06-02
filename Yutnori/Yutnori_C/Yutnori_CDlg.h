@@ -38,9 +38,11 @@ public:
 	CString m_strAddress;
 	int m_nPort;
 	CEdit m_ctrlEdit;
+	
 	CString m_strMessage;
 	CClientSocket* m_pClientSocket;
 	afx_msg void OnBnClickedConnect();
 	virtual BOOL DestroyWindow();
 	virtual void OnOK();
+	afx_msg void OnEnChangeEdit3();
 };

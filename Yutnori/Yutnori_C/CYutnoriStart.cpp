@@ -43,19 +43,19 @@ END_MESSAGE_MAP()
 
 // CYutnoriStart 메시지 처리기
 
-CNaverOAuthDlg dlg;
+CNaverOAuthDlg dlgtt;
 void CYutnoriStart::OnClickedButton1()
 {
-	if (dlg.IsLogin == 0 || dlg.IsLogin == -1) { //처음(0)이나 로그아웃(-1)했을때 실행
-		dlg.DoModal();
-		if (dlg.IsLogin == 1) { //로그인 성공시
+	if (dlgtt.IsLogin == 0 || dlgtt.IsLogin == -1) { //처음(0)이나 로그아웃(-1)했을때 실행
+		dlgtt.DoModal();
+		if (dlgtt.IsLogin == 1) { //로그인 성공시
 			SetDlgItemText(IDC_BUTTON1, _T("로그아웃"));
-			SetDlgItemText(IDC_STATIC, _T(dlg.m_NaverNickName + "님 \n 반갑습니다."));
+			SetDlgItemText(IDC_STATIC, _T(dlgtt.m_NaverNickName + "님 \n 반갑습니다."));
 			SelectOAuth = 1;
 		}
 	} // 로그인
-	else if(dlg.IsLogin == 1){ //로그인 되어있을 때 실행 
-		dlg.DoModal();
+	else if(dlgtt.IsLogin == 1){ //로그인 되어있을 때 실행 
+		dlgtt.DoModal();
 		SetDlgItemText(IDC_BUTTON1, _T("로그인"));
 		SetDlgItemText(IDC_STATIC, _T("게임이용을 위해 로그인을 해주시기 바랍니다."));
 		SelectOAuth = -1;
@@ -78,12 +78,13 @@ void CYutnoriStart::OnClickedButton2()
 void CYutnoriStart::OnBnClickedButton3()
 {
 	if (SelectOAuth == 1) {
-		CYutnoriBoard dlg;
-		dlg.DoModal();
+		CYutnoriBoard dlggame;
+		dlggame.DoModal();
 	}
 	else {
-		CYutnoriBoard dlg; // 테스트 종료시 비활성화
-		dlg.DoModal(); // 테스트 종료시 비활성화
+		CYutnoriCDlg dlggame; // 테스트 종료시 비활성화
+		//dlggame.m_nickname = dlg.m_NaverNickName; //테스트 종료시 상위조건문으로 옮김
+		dlggame.DoModal(); // 테스트 종료시 비활성화
 		//AfxMessageBox("로그인을 해주시기 바랍니다.");  테스트 종료시 활성화
 	}
 	// 게임 시작

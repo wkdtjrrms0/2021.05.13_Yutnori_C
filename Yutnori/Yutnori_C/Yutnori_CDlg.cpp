@@ -56,7 +56,6 @@ CYutnoriCDlg::CYutnoriCDlg(CWnd* pParent /*=nullptr*/)
 	, m_nPort(7000)
 	, m_strMessage(_T("안녕하세요?"))
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 void CYutnoriCDlg::DoDataExchange(CDataExchange* pDX)
@@ -76,6 +75,7 @@ BEGIN_MESSAGE_MAP(CYutnoriCDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT2, &CYutnoriCDlg::OnEnChangeEdit2)
 	ON_EN_CHANGE(IDC_EDIT4, &CYutnoriCDlg::OnEnChangeEdit4)
 	ON_BN_CLICKED(IDC_BUTTON1, &CYutnoriCDlg::OnBnClickedConnect)
+	ON_EN_CHANGE(IDC_EDIT3, &CYutnoriCDlg::OnEnChangeEdit3)
 END_MESSAGE_MAP()
 
 
@@ -233,4 +233,15 @@ void CYutnoriCDlg::OnOK()
 	this->UpdateData(FALSE); //화면을 갱신한다.
 
 	//CDialogEx::OnOK(); //프로그램이 종료되는 것을 방지한다.
+}
+
+
+void CYutnoriCDlg::OnEnChangeEdit3()
+{
+	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
+	// CDialogEx::OnInitDialog() 함수를 재지정 
+	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
+	// 이 알림 메시지를 보내지 않습니다.
+
+	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

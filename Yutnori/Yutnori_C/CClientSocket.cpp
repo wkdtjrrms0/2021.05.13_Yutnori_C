@@ -1,7 +1,19 @@
+
 #include "pch.h"
 #include "CClientSocket.h"
+#include "CYutnoriBoard.h"
+#include "Yutnori_C.h"
+#include "afxwin.h"
 #include "Yutnori_CDlg.h"
 
+CClientSocket::CClientSocket()
+{
+	count = 0;
+}
+
+CClientSocket::~CClientSocket()
+{
+}
 
 void CClientSocket::OnClose(int nErrorCode)
 {
@@ -27,8 +39,13 @@ void CClientSocket::OnReceive(int nErrorCode)
 	} break;
 	default:
 		szBuffer[nRead] = _T('\0');
-		CYutnoriCDlg* pMain = (CYutnoriCDlg*)AfxGetMainWnd();
+		CYutnoriBoard* pMain = (CYutnoriBoard*)AfxGetMainWnd();
+		if (count == 0) {
+			pMain->m_ctrlEditN.ReplaceSel(pMain->m_nickname);
+			pMain->m_ctrlEditN.ReplaceSel(_T("\r\n"));
+		} //최초만 실행
 		pMain->m_ctrlEdit.ReplaceSel(szBuffer);
+		count++;
 	}
 
 

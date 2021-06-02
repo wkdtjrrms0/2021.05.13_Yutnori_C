@@ -9,5 +9,6 @@ public:
 	CListenSocket *m_pListenSocket;
 	virtual void OnClose(int nErrorCode);
 	virtual void OnReceive(int nErrorCode);
+	CString CChildSocket::FindNickName(LPCTSTR szUrl);
 };
 

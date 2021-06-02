@@ -1,5 +1,7 @@
 ﻿#pragma once
-
+#include "CClientSocket.h"
+#include "afxwin.h"
+#include "afxdhtml.h"
 
 // CYutnoriBoard 대화 상자
 
@@ -22,7 +24,22 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnBnClickedButton1();
 	afx_msg void OnPaint();
-	afx_msg void OnBnClickedRadio2();
+	void ConnectChat();
+	virtual BOOL OnInitDialog();
+	CString m_strMessage;
+	CClientSocket* m_pClientSocket; //CClient소켓 개체의 주소를 저장할 멤버변수
+	virtual BOOL DestroyWindow();
+	CEdit m_ctrlEdit;
+	CString m_nickname;
+	virtual void OnOK();
+	afx_msg void OnBnClickedButton4();
+	CString m_strAddress;
+	int m_nPort;
+	int SelectOAuth; //로그인, 로그아웃 상태를 저장하는 변수합니다. 
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton3();
+	CEdit m_ctrlEditN;
+	afx_msg void OnBnClickedCancel();
 };
