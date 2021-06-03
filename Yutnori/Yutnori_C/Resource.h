@@ -15,6 +15,11 @@
 #define IDD_DIALOG1                     147
 #define IDD_YUTNORI_Board               147
 #define IDB_BITMAP2                     149
+#define IDB_BITMAP3                     150
+#define IDB_BITMAP4                     151
+#define IDB_BITMAP5                     152
+#define IDB_BITMAP6                     153
+#define IDB_BITMAP7                     154
 #define IDC_EDIT1                       1000
 #define IDC_EDIT2                       1001
 #define IDC_EDIT3                       1002
@@ -37,7 +42,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        150
+#define _APS_NEXT_RESOURCE_VALUE        155
 #define _APS_NEXT_COMMAND_VALUE         32771
 #define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           105

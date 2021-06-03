@@ -48,6 +48,9 @@
     <ClInclude Include="CYutnoriBoard.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="CPiece.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Yutnori_C.cpp">
@@ -72,6 +75,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CYutnoriBoard.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="CPiece.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -106,6 +112,21 @@
       <Filter>리소스 파일</Filter>
     </Image>
     <Image Include="res\map.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\FINAL-1.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\FINAL-2.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\FINAL-3.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\FINAL-4.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="res\FINAL-5.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>

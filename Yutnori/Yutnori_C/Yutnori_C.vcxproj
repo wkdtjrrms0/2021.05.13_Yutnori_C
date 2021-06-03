@@ -198,6 +198,7 @@
     <ClInclude Include="CBoardDlg.h" />
     <ClInclude Include="CClientSocket.h" />
     <ClInclude Include="CNaverOAuthDlg.h" />
+    <ClInclude Include="CPiece.h" />
     <ClInclude Include="CYutnoriBoard.h" />
     <ClInclude Include="CYutnoriStart.h" />
     <ClInclude Include="framework.h" />
@@ -211,6 +212,7 @@
     <ClCompile Include="CBoardDlg.cpp" />
     <ClCompile Include="CClientSocket.cpp" />
     <ClCompile Include="CNaverOAuthDlg.cpp" />
+    <ClCompile Include="CPiece.cpp" />
     <ClCompile Include="CYutnoriBoard.cpp" />
     <ClCompile Include="CYutnoriStart.cpp" />
     <ClCompile Include="pch.cpp">
@@ -236,6 +238,11 @@
     <Image Include="..\..\..\..\윷놀이.jpg" />
     <Image Include="res\bitmap1.bmp" />
     <Image Include="res\bitmap2.bmp" />
+    <Image Include="res\FINAL-1.bmp" />
+    <Image Include="res\FINAL-2.bmp" />
+    <Image Include="res\FINAL-3.bmp" />
+    <Image Include="res\FINAL-4.bmp" />
+    <Image Include="res\FINAL-5.bmp" />
     <Image Include="res\map.bmp" />
     <Image Include="res\test.bmp" />
     <Image Include="res\Yutnori_C.ico" />

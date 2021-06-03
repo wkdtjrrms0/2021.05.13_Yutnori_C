@@ -2,6 +2,7 @@
 #include "CClientSocket.h"
 #include "afxwin.h"
 #include "afxdhtml.h"
+#include<ctime>
 
 // CYutnoriBoard 대화 상자
 
@@ -42,4 +43,10 @@ public:
 	afx_msg void OnBnClickedButton3();
 	CEdit m_ctrlEditN;
 	afx_msg void OnBnClickedCancel();
+	int m_Radio;
+	int IsThrow;
+	int YutNum;
+	int goalm; //나의 성공말갯수
+	int goaly; //상대의 성공말갯수
+	int IsGamebutton;
 };
