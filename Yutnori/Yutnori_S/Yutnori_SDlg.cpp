@@ -113,6 +113,9 @@ BOOL CYutnoriSDlg::OnInitDialog()
 	}
 	else AfxMessageBox(_T("ERROR: Failed to create a listen socket.")); //ex. 메모리가 꽉찬경우
 
+
+
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 

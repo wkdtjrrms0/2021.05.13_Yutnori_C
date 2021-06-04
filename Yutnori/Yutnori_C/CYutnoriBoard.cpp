@@ -13,7 +13,7 @@ IMPLEMENT_DYNAMIC(CYutnoriBoard, CDialogEx)
 
 CYutnoriBoard::CYutnoriBoard(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_YUTNORI_Board, pParent)
-	, m_strAddress(_T("127.0.0.1"))//자신 컴퓨터 주소
+	, m_strAddress(_T("127.0.0.1"))//연결할 컴퓨터 주소
 	, m_nPort(7000)
 	, m_strMessage(_T("메시지를 입력하세요."))
 	, m_Radio(-1)
