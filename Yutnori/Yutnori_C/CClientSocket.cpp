@@ -48,6 +48,7 @@ void CClientSocket::OnReceive(int nErrorCode)
 					count = 1;
 
 					pMain->IsTurn = -1;
+					pMain->SetDlgItemText(IDC_STATIC2, _T("상대방 차례입니다..."));
 				}
 				else {
 					
@@ -59,12 +60,56 @@ void CClientSocket::OnReceive(int nErrorCode)
 				pMain->m_ctrlEdit.ReplaceSel(_T("다른클라이언트가 던졌습니다.\r\n"));
 				pMain->opPiece(Piece, YutNum);
 				pMain->IsTurn = 1;
+				pMain->SetDlgItemText(IDC_STATIC2, _T("당신의 차례입니다..."));
 
 			}
 
 
 		}
-		
+		else if (sort == 2) { //게임시작 메시지
+			pMain->m_ctrlEdit.ReplaceSel(szBuffer);
+			pMain->SetDlgItemText(IDC_STATIC2, _T("윷을 먼저 던져 옮기는 사람이 선공입니다."));
+			pMain->IsGameStart = 1;
+		}
+		else if (sort == 3) { //게임승리 메시지
+			int len = receive.GetLength();
+			receivenick = receive.Left(len - 3);
+			if (strcmp(receivenick, pMain->m_nickname) == 0) { //받은 닉네임과 클라이언트가 동일할 경우=>나의 승리
+				pMain->m_ctrlEdit.ReplaceSel(_T("게임에 승리하셨습니다.\r\n"));
+				pMain->m_ctrlEdit.ReplaceSel(_T("[Status] 연결 종료\r\n"));
+				this->ShutDown();
+				this->Close();
+				pMain->InitPiece();
+				
+			}
+			else if (strcmp(receivenick, pMain->m_nickname) != 0) { //받은 닉네임과 클라이언트가 다를 경우=>나의 패배
+				pMain->m_ctrlEdit.ReplaceSel(_T("게임에 패배하셨습니다.\r\n"));
+				this->ShutDown();
+				this->Close();
+				pMain->InitPiece();
+				pMain->SetDlgItemText(IDC_STATIC2, _T("안녕하세요. 윷놀이 게임입니다."));
+			}
+			pMain->IsGameStart = 0;
+
+		}
+		else if (sort == 4) { //게임패배 메시지
+			int len = receive.GetLength();
+			receivenick = receive.Left(len - 4);
+			if (strcmp(receivenick, pMain->m_nickname) == 0) { //받은 닉네임과 클라이언트가 동일할 경우=>나의 패배
+				pMain->m_ctrlEdit.ReplaceSel(_T("게임에 패배하셨습니다.\r\n"));
+				pMain->InitPiece();
+			}
+			else if (strcmp(receivenick, pMain->m_nickname) != 0) { //받은 닉네임과 클라이언트가 다를 경우=>나의 승리
+				pMain->m_ctrlEdit.ReplaceSel(_T("게임에 승리하셨습니다.\r\n"));
+				pMain->m_ctrlEdit.ReplaceSel(_T("[Status] 연결 종료\r\n"));
+				this->ShutDown();
+				this->Close();
+				pMain->InitPiece();
+			}
+			pMain->IsGameStart = 0;
+		}
+
+
 	}
 	CSocket::OnReceive(nErrorCode);
 }
@@ -89,6 +134,37 @@ CString CClientSocket::Find(LPCTSTR receive)
 		sort = 1;
 		return find;
 	}
+	else if (find.Left(8) == _T("[Status]")) { //메시지가 상태정보일 경우
+		find = find.Mid(find.GetLength() - 20, find.GetLength());
+		if (strcmp(find, _T("게임이 시작됩니다!\r\n")) == 0) { //받은 문자가 게임이 시작된다는 문자일경우
+			sort = 2; return find;
+		}
+		else {
+			sort = 0; return find;
+		}
+	}
+
+	else if (find.Left(6) == _T("[Game]")) { //메시지가 게임정보일 경우
+		if (strcmp(find.Mid(find.Find(": Win") + 2,3), _T("Win")) == 0) { //승리메시지일 경우=>[Game]CBNU JSK: Win\r\n => 반환=>CBNU JSKWin
+			sort = 3;
+			int findIndexR = find.Find(": Win");
+			find = find.Left(findIndexR);
+			int findIndexL = find.Find("[Game]") + 5;
+			find = find.Right(findIndexR - findIndexL - 1);
+			find = find + _T("Win");
+			return find;
+		}
+		else { //패배메시지일 경우
+			sort = 4;
+			int findIndexR = find.Find(": Lose");
+			find = find.Left(findIndexR);
+			int findIndexL = find.Find("[Game]")+5;
+			find = find.Right(findIndexR - findIndexL - 1);
+			find = find + _T("Lose");
+			return find;
+		}
+	}
+
 	else { //메시지가 접속정보일 경우
 		sort = 0;
 		return find;

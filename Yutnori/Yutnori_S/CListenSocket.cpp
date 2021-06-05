@@ -20,7 +20,7 @@ void CListenSocket::OnAccept(int nErrorCode)
 	pChild->m_pListenSocket = this; //CListenSocket 객체의 주소를 CChildSocket 객체에 저장한다.
 	
 	int count = m_pChildSocketList.GetCount();
-	CString gamestart = _T("[Status] 게임이 시작됩니다!\r\n");
+	CString gamestart = _T("[Game] 게임이 시작됩니다!\r\n");
 	CString gamewait = _T("[Status] 상대방이 접속할때까지 대기합니다....\r\n");
 	if (count == 1) {
 		Broadcast(gamewait);

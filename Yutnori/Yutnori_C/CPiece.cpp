@@ -5,17 +5,19 @@ CPiece::CPiece() {
     x = 275;
     y = 480;
     count = 0;
+    catched = 0;
 }
 
 //홈 x=275 y=480
 void CPiece:: Move(int n)    
 {
-    if (count == 0) { //최초원점
+    if (count == 0 || catched == 1) { //최초원점
         x = x + (42 * n);
         y = y - (41 * n);
         if (x > 485) {
             x = 970 - x;
         }
+        catched = 0;
     }
     else if (x > 275 && x < 485 && y>275 && y < 480) { // ↗방향
         x = x + (42 * n);
@@ -104,7 +106,7 @@ void CPiece:: Move(int n)
             y = -1;
         }
     }
-    if (count != 0) { //한바퀴 돌아 원점에 도착한 후 던졌을떄
+    if (count != 0 && catched == 0) { //한바퀴 돌아 원점에 도착한 후 던졌을떄
         if (x == 275 && y == 480) {
             x = -1;
             y = -1;
