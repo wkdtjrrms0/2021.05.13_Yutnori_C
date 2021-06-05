@@ -14,6 +14,7 @@
 
 IMPLEMENT_DYNAMIC(CYutnoriBoard, CDialogEx)
 
+/*생성자*/
 CYutnoriBoard::CYutnoriBoard(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_YUTNORI_Board, pParent)
 	, m_strAddress(_T("127.0.0.1"))//연결할 컴퓨터 주소
@@ -43,7 +44,6 @@ void CYutnoriBoard::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_STATIC2, m_Text);
 }
 
-
 BEGIN_MESSAGE_MAP(CYutnoriBoard, CDialogEx)
 	ON_WM_PAINT()
 	ON_BN_CLICKED(IDC_BUTTON4, &CYutnoriBoard::OnBnClickedButton4)
@@ -53,36 +53,27 @@ BEGIN_MESSAGE_MAP(CYutnoriBoard, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CYutnoriBoard::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
-CNaverOAuthDlg dlg;
+CNaverOAuthDlg dlg; //네이버 로그인 객체 생성
+CPiece dlg0, dlg1, dlg2, dlg3; //내 말객체
+CPiece dlg4, dlg5, dlg6, dlg7; //상대방 말객체
 
 /*윷판을 그립니다.*/
 void CYutnoriBoard::OnPaint()
 {
-	CPaintDC dc(this); // device context for painting
-					   // TODO: 여기에 메시지 처리기 코드를 추가합니다.
-					   // 그리기 메시지에 대해서는 CDialogEx::OnPaint()을(를) 호출하지 마십시오.
-
-
+	CPaintDC dc(this);
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
-
+		CPaintDC dc(this);
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-
-		// 클라이언트 사각형에서 아이콘을 가운데에 맞춥니다.
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
 		GetClientRect(&rect);
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		// 아이콘을 그립니다.
 		dc.DrawIcon(x, y, m_hIcon);
 	}
-
-	else
-	{
+	else { //윷판을 그림 
 		CDC* pDC = GetDC();
 		CClientDC dc(this);
 		CBitmap bmpBack1; bmpBack1.LoadBitmapA(IDB_BITMAP2);
@@ -99,7 +90,7 @@ void CYutnoriBoard::OnPaint()
 }
 
 /*(2)소켓만듬, (3)연결시도, 서버와 연결하는 함수입니다.*/
-void CYutnoriBoard::ConnectChat()
+void CYutnoriBoard::Connect()
 {
 	m_pClientSocket = new CClientSocket;
 	m_pClientSocket->Create(); //(2)소켓만듬
@@ -111,38 +102,7 @@ void CYutnoriBoard::ConnectChat()
 	if (!success) { ConnectError = -1;  m_ctrlEdit.ReplaceSel(_T("[error] 서버와 연결하지 못했습니다.\r\n")); };
 }
 
-
-BOOL CYutnoriBoard::OnInitDialog()
-{
-	CDialogEx::OnInitDialog();
-	return TRUE;
-}
-
-/*연결이 끝나면 소켓을 끊습니다.*/
-BOOL CYutnoriBoard::DestroyWindow()
-{
-	if (IsGameStart == 1) {
-		m_pClientSocket->ShutDown();
-		m_pClientSocket->Close();
-		delete m_pClientSocket;
-	}
-	return CDialogEx::DestroyWindow();
-}
-
-/*채팅전송버튼입니다.*/
-void CYutnoriBoard::OnOK()
-{
-	if ((SelectOAuth == 1) && (IsGamebutton == 1) && (ConnectError != -1)) {
-		this->UpdateData(TRUE);
-		m_strMessage.Append(_T("\r\n"));
-		m_pClientSocket->Send("[Chat]" + m_nickname + ": " + m_strMessage, m_nickname.GetLength() + 8 +m_strMessage.GetLength());  //(4)데이터 보냄.
-		m_strMessage = _T("");
-		this->UpdateData(FALSE);
-	}
-	else {AfxMessageBox("로그인과 게임준비를 해주시기 바랍니다.");}
-}
-
-/*로그인버튼입니다, 로그인 성공시 소켓연결 함수 실행*/
+/*[1] 로그인버튼입니다.*/
 void CYutnoriBoard::OnBnClickedButton4()
 {
 	if (dlg.IsLogin == 0 || dlg.IsLogin == -1) { //처음(0)이나 로그아웃(-1)했을때 실행
@@ -153,7 +113,7 @@ void CYutnoriBoard::OnBnClickedButton4()
 			SetDlgItemText(IDC_BUTTON4, _T("로그아웃"));
 			SetDlgItemText(IDC_STATIC, _T(m_nickname + "님 \n 반갑습니다."));
 		}
-	} // 로그인
+	}
 	else if (dlg.IsLogin == 1) { //로그인 되어있을 때 실행
 		if (IsGamebutton == 0) {
 			dlg.DoModal();
@@ -164,15 +124,15 @@ void CYutnoriBoard::OnBnClickedButton4()
 		else {
 			m_ctrlEdit.ReplaceSel(_T("게임이용중에는 로그아웃 할 수 없습니다. 기권 후 눌러주세요.\r\n"));
 		}
-	} // 로그아웃
+	}
 }
 
-/*게임준비버튼입니다.*/
+/*[2-1] 게임준비버튼입니다.*/
 void CYutnoriBoard::OnBnClickedButton1()
 {
 	if (SelectOAuth == 1) {
 		if ((IsGamebutton != 1) && (ConnectError == 0)) {
-			ConnectChat();
+			Connect();
 		}
 		if ((IsGamebutton != 1) && (ConnectError != -1)) {
 			SetDlgItemText(IDC_STATIC2, _T("상대방을 기다리는 중입니다."));
@@ -197,81 +157,31 @@ void CYutnoriBoard::OnBnClickedButton1()
 	else { AfxMessageBox("로그인을 해주시기 바랍니다."); }
 }
 
-CPiece dlg0, dlg1, dlg2, dlg3; //내 말
-CPiece dlg4, dlg5, dlg6, dlg7; //상대방 말
-/*옮기기버튼입니다.*/
-void CYutnoriBoard::OnBnClickedButton2()
+/*[2-2]연결이 끝나면 소켓을 끊습니다.*/
+BOOL CYutnoriBoard::DestroyWindow()
 {
-	if (IsGamebutton == 1) {
-		if (IsGameStart == 1) {
-			if (IsTurn != -1) {
-				if (IsThrow != 0) { //윷던지기 눌렀을때 실행
-					Invalidate();
-					UpdateData(true); //라디오버튼 체크
-					CString yutinfo;
-					switch (m_Radio) { //선택한 말 이동
-					case 0: dlg0.Move(YutNum); break;
-					case 1: dlg1.Move(YutNum); break;
-					case 2: dlg2.Move(YutNum); break;
-					case 3: dlg3.Move(YutNum); break;
-					default: m_ctrlEdit.ReplaceSel(_T("옮길 말을 선택해주세요.\r\n")); break;
-					}
-
-					if ((m_Radio == 0) || (m_Radio == 1) || (m_Radio == 2) || (m_Radio == 3)) { //말이 선택되었을때 실질적인 윷정보를 보냄
-						yutinfo.Format(_T("[Yutinfo]%s: Piece: %d, YutNum: %d\r\n"), m_nickname, m_Radio, YutNum);
-						m_pClientSocket->Send(yutinfo, yutinfo.GetLength());
-						m_ctrlEdit.ReplaceSel(_T("말을 옮겼습니다.\r\n"));
-						IsThrow = 0;
-						AfxMessageBox("말을 옮겼습니다."); //그림출력 테스트용
-					};
-
-					if (Catch(dlg0.x, dlg1.x, dlg2.x, dlg3.x, dlg4.x, dlg5.x, dlg6.x, dlg7.x, dlg0.y, dlg1.y, dlg2.y, dlg3.y, dlg4.y, dlg5.y, dlg6.y, dlg7.y) == TRUE) { //내가 상대말을 잡는경우
-						m_ctrlEdit.ReplaceSel(_T("축하합니다. 상대말을 잡았습니다.\r\n"));
-					}
-					PaintPiece(dlg0.x, dlg1.x, dlg2.x, dlg3.x, dlg4.x, dlg5.x, dlg6.x, dlg7.x, dlg0.y, dlg1.y, dlg2.y, dlg3.y, dlg4.y, dlg5.y, dlg6.y, dlg7.y);
-
-					victoryCheck(dlg0.x, dlg0.y, dlg1.x, dlg1.y, dlg2.x, dlg2.y, dlg3.x, dlg3.y);
-				}
-				else {
-					m_ctrlEdit.ReplaceSel(_T("윷을 던지고 옮겨주세요.\r\n"));
-				}
-			}
-			else { m_ctrlEdit.ReplaceSel(_T("상대방이 던질때까지 기다려주세요.\r\n")); }
-		}
-		else{ m_ctrlEdit.ReplaceSel(_T("상대방이 접속할때까지 기다려주세요.\r\n")); }
-	} else { 
-		AfxMessageBox("로그인 후 게임준비버튼을 눌러주시기 바랍니다.");
-	 }
+	if (IsGameStart == 1) {
+		m_pClientSocket->ShutDown();
+		m_pClientSocket->Close();
+		delete m_pClientSocket;
+	}
+	return CDialogEx::DestroyWindow();
 }
 
-/*상대방말 움직이는 함수*/
-void CYutnoriBoard::opPiece(int m_opRadio, int opYutNum)
+/*[3] 채팅전송버튼입니다.*/
+void CYutnoriBoard::OnOK()
 {
-	Invalidate();
-	UpdateData(true);
-	CString yutinfo;
-	switch (m_opRadio) { //선택한 말 이동
-	case 0: dlg4.Move(opYutNum); break;
-	case 1: dlg5.Move(opYutNum); break;
-	case 2: dlg6.Move(opYutNum); break;
-	case 3: dlg7.Move(opYutNum); break;
-	default: m_ctrlEdit.ReplaceSel(_T("옮길 말을 선택해주세요.\r\n")); break;
+	if ((SelectOAuth == 1) && (IsGamebutton == 1) && (ConnectError != -1)) {
+		this->UpdateData(TRUE);
+		m_strMessage.Append(_T("\r\n"));
+		m_pClientSocket->Send("[Chat]" + m_nickname + ": " + m_strMessage, m_nickname.GetLength() + 8 + m_strMessage.GetLength());  //(4)데이터 보냄.
+		m_strMessage = _T("");
+		this->UpdateData(FALSE);
 	}
-
-	if ((m_opRadio == 0) || (m_opRadio == 1) || (m_opRadio == 2) || (m_opRadio == 3)) { //말이 선택되었을때 실질적인 윷정보를 보냄
-		m_ctrlEdit.ReplaceSel(_T("상대방이 말을 옮겼습니다.\r\n"));
-
-
-		AfxMessageBox("상대방이 말을 옮겼습니다."); //그림출력 테스트용
-	};
-	if (CatchMe(dlg4.x, dlg5.x, dlg6.x, dlg7.x, dlg0.x, dlg1.x, dlg2.x, dlg3.x, dlg4.y, dlg5.y, dlg6.y, dlg7.y, dlg0.y, dlg1.y, dlg2.y, dlg3.y) == TRUE) { //상대가 내 말을 잡는경우
-		m_ctrlEdit.ReplaceSel(_T("아쉽내요. 상대말에게 잡혔습니다.\r\n"));
-	}
-	PaintPiece(dlg0.x, dlg1.x, dlg2.x, dlg3.x, dlg4.x, dlg5.x, dlg6.x, dlg7.x, dlg0.y, dlg1.y, dlg2.y, dlg3.y, dlg4.y, dlg5.y, dlg6.y, dlg7.y);
+	else { AfxMessageBox("로그인과 게임준비를 해주시기 바랍니다."); }
 }
 
-
-/*던지기버튼입니다.*/
+/*[3] 던지기버튼입니다.*/
 void CYutnoriBoard::OnBnClickedButton3()
 {
 	if (IsGamebutton == 1) {
@@ -342,33 +252,75 @@ void CYutnoriBoard::OnBnClickedButton3()
 						memDC.DeleteDC();  //메모리DC삭제
 						bmpBG.DeleteObject(); //비트맵리소스 삭제
 					}
-					IsThrow++;
+					IsThrow++;}
+			} else { m_ctrlEdit.ReplaceSel(_T("상대방이 던질때까지 기다려주세요.\r\n")); }
+		} else{ m_ctrlEdit.ReplaceSel(_T("상대방이 접속할때까지 기다려주세요.\r\n")); }
+	} else { AfxMessageBox("로그인 후 게임준비버튼을 눌러주시기 바랍니다."); }
+}
+
+/*[3] 옮기기버튼입니다.*/
+void CYutnoriBoard::OnBnClickedButton2()
+{
+	if (IsGamebutton == 1) {
+		if (IsGameStart == 1) {
+			if (IsTurn != -1) {
+				if (IsThrow != 0) { //윷던지기 눌렀을때 실행
+					Invalidate();
+					UpdateData(true); //라디오버튼 체크
+					CString yutinfo;
+					switch (m_Radio) { //선택한 말 이동
+					case 0: dlg0.Move(YutNum); break;
+					case 1: dlg1.Move(YutNum); break;
+					case 2: dlg2.Move(YutNum); break;
+					case 3: dlg3.Move(YutNum); break;
+					default: m_ctrlEdit.ReplaceSel(_T("옮길 말을 선택해주세요.\r\n")); break;
+					}
+					if ((m_Radio == 0) || (m_Radio == 1) || (m_Radio == 2) || (m_Radio == 3)) { //말이 선택되었을때 실질적인 윷정보를 보냄
+						yutinfo.Format(_T("[Yutinfo]%s: Piece: %d, YutNum: %d\r\n"), m_nickname, m_Radio, YutNum);
+						m_pClientSocket->Send(yutinfo, yutinfo.GetLength());
+						m_ctrlEdit.ReplaceSel(_T("말을 옮겼습니다.\r\n"));
+						IsThrow = 0;
+						AfxMessageBox("말을 옮겼습니다.");
+					};
+					if (Catch(dlg0.x, dlg1.x, dlg2.x, dlg3.x, dlg4.x, dlg5.x, dlg6.x, dlg7.x, dlg0.y, dlg1.y, dlg2.y, dlg3.y, dlg4.y, dlg5.y, dlg6.y, dlg7.y) == TRUE) {
+						m_ctrlEdit.ReplaceSel(_T("축하합니다. 상대말을 잡았습니다.\r\n"));
+					} //내가 상대말을 잡았는지 체크
+					PaintPiece(dlg0.x, dlg1.x, dlg2.x, dlg3.x, dlg4.x, dlg5.x, dlg6.x, dlg7.x, dlg0.y, dlg1.y, dlg2.y, dlg3.y, dlg4.y, dlg5.y, dlg6.y, dlg7.y);
+					victoryCheck(dlg0.x, dlg0.y, dlg1.x, dlg1.y, dlg2.x, dlg2.y, dlg3.x, dlg3.y); //승리했는지 체크
 				}
+				else { m_ctrlEdit.ReplaceSel(_T("윷을 던지고 옮겨주세요.\r\n")); }
 			}
 			else { m_ctrlEdit.ReplaceSel(_T("상대방이 던질때까지 기다려주세요.\r\n")); }
 		}
-		else{ m_ctrlEdit.ReplaceSel(_T("상대방이 접속할때까지 기다려주세요.\r\n")); }
+		else { m_ctrlEdit.ReplaceSel(_T("상대방이 접속할때까지 기다려주세요.\r\n")); }
 	}
 	else { AfxMessageBox("로그인 후 게임준비버튼을 눌러주시기 바랍니다."); }
 }
 
-/*나가기버튼입니다.*/
-void CYutnoriBoard::OnBnClickedCancel()
+/*[4] 상대방말 움직이는 함수*/
+void CYutnoriBoard::opPiece(int m_opRadio, int opYutNum)
 {
-	if (IsGameStart == 1) {
-		CString lose;
-		lose.Format(_T("[Game]%s: Lose\r\n"), m_nickname);
-		m_pClientSocket->Send(lose, lose.GetLength());
-		m_pClientSocket->ShutDown();
-		m_pClientSocket->Close();
-		delete m_pClientSocket;
+	Invalidate();
+	UpdateData(true);
+	CString yutinfo;
+	switch (m_opRadio) { //선택한 말 이동
+	case 0: dlg4.Move(opYutNum); break;
+	case 1: dlg5.Move(opYutNum); break;
+	case 2: dlg6.Move(opYutNum); break;
+	case 3: dlg7.Move(opYutNum); break;
+	default: m_ctrlEdit.ReplaceSel(_T("옮길 말을 선택해주세요.\r\n")); break;
 	}
-	CDialogEx::OnCancel();
+	if ((m_opRadio == 0) || (m_opRadio == 1) || (m_opRadio == 2) || (m_opRadio == 3)) { //말이 체크되었을때
+		m_ctrlEdit.ReplaceSel(_T("상대방이 말을 옮겼습니다.\r\n"));
+		AfxMessageBox("상대방이 말을 옮겼습니다.");
+	};
+	if (CatchMe(dlg4.x, dlg5.x, dlg6.x, dlg7.x, dlg0.x, dlg1.x, dlg2.x, dlg3.x, dlg4.y, dlg5.y, dlg6.y, dlg7.y, dlg0.y, dlg1.y, dlg2.y, dlg3.y) == TRUE) {
+		m_ctrlEdit.ReplaceSel(_T("아쉽내요. 상대말에게 잡혔습니다.\r\n"));
+	} //상대가 내 말을 잡았는지 체크
+	PaintPiece(dlg0.x, dlg1.x, dlg2.x, dlg3.x, dlg4.x, dlg5.x, dlg6.x, dlg7.x, dlg0.y, dlg1.y, dlg2.y, dlg3.y, dlg4.y, dlg5.y, dlg6.y, dlg7.y);
 }
 
-
-
-/*좌표 색칠하는 함수*/
+/*[3.옮기기,4] 좌표 색칠하는 함수*/
 void CYutnoriBoard::PaintPiece(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8, int y1, int y2, int y3, int y4, int y5, int y6, int y7, int y8)
 {
 	CClientDC dc(this);
@@ -400,7 +352,7 @@ void CYutnoriBoard::PaintPiece(int x1, int x2, int x3, int x4, int x5, int x6, i
 	dc.SelectObject(oldpen);
 }
 
-/*상대방 말을 잡는 함수*/
+/*[3.옮기기] 상대방 말을 잡는 함수*/
 BOOL CYutnoriBoard::Catch(int cx1, int cx2, int cx3, int cx4, int cx5, int cx6, int cx7, int cx8, int cy1, int cy2, int cy3, int cy4, int cy5, int cy6, int cy7, int cy8)
 {
 	if ((cx1 == cx5) && (cy1 == cy5) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg4.x = FIRSTX; dlg4.y = FIRSTY; dlg4.catched = 1; return TRUE; }
@@ -422,7 +374,7 @@ BOOL CYutnoriBoard::Catch(int cx1, int cx2, int cx3, int cx4, int cx5, int cx6, 
 	return FALSE;
 }
 
-/*내 말이 잡히는 함수*/
+/*[4]내 말이 잡히는 함수*/
 BOOL CYutnoriBoard::CatchMe(int cx1, int cx2, int cx3, int cx4, int cx5, int cx6, int cx7, int cx8, int cy1, int cy2, int cy3, int cy4, int cy5, int cy6, int cy7, int cy8)
 {
 	if ((cx1 == cx5) && (cy1 == cy5) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg0.x = FIRSTX; dlg0.y = FIRSTY; dlg0.catched = 1; return TRUE; }
@@ -444,7 +396,7 @@ BOOL CYutnoriBoard::CatchMe(int cx1, int cx2, int cx3, int cx4, int cx5, int cx6
 	return FALSE;
 }
 
-/*말이 4개 다 들어갔는지 확인해주는 함수*/
+/*[3.옮기기,4] 말이 4개 다 들어갔는지 확인해주는 함수*/
 void CYutnoriBoard::victoryCheck(int ax, int ay, int bx, int by, int cx, int cy, int dx, int dy)
 {
 	if (ax == -1 && ay == -1) { if (bx == -1 && by == -1) { if (cx == -1 && cy == -1) { if (dx == -1 && dy == -1) {
@@ -452,10 +404,23 @@ void CYutnoriBoard::victoryCheck(int ax, int ay, int bx, int by, int cx, int cy,
 		victory.Format(_T("[Game]%s: Win\r\n"), m_nickname);
 		m_pClientSocket->Send(victory, victory.GetLength());
 	} } } }
-
 }
 
-/*게임종료 후 이전게임정보를 초기화하는 함수*/
+/*[5] 나가기버튼입니다.*/
+void CYutnoriBoard::OnBnClickedCancel()
+{
+	if (IsGameStart == 1) {
+		CString lose;
+		lose.Format(_T("[Game]%s: Lose\r\n"), m_nickname);
+		m_pClientSocket->Send(lose, lose.GetLength());
+		m_pClientSocket->ShutDown();
+		m_pClientSocket->Close();
+		delete m_pClientSocket;
+	}
+	CDialogEx::OnCancel();
+}
+
+/*[6] 게임종료 후 이전게임정보를 초기화하는 함수*/
 void CYutnoriBoard::InitPiece()
 {
 	Invalidate();

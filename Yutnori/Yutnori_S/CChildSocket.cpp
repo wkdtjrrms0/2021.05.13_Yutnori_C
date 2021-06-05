@@ -15,9 +15,6 @@ void CChildSocket::OnClose(int nErrorCode)
 	this->ShutDown();
 	this->Close();
 	delete this;
-
-
-
 	CSocket::OnClose(nErrorCode);
 }
 

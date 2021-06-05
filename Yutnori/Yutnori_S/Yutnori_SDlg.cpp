@@ -1,6 +1,4 @@
-﻿
-// Yutnori_SDlg.cpp: 구현 파일
-//
+﻿// Yutnori_SDlg.cpp: 구현 파일//
 
 #include "pch.h"
 #include "framework.h"
@@ -12,7 +10,6 @@
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
 
 /* 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.*/
 class CAboutDlg : public CDialogEx
@@ -39,11 +36,8 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 }
-
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
-
-
 // CYutnoriSDlg 대화 상자
 CYutnoriSDlg::CYutnoriSDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_YUTNORI_S_DIALOG, pParent)
@@ -62,8 +56,6 @@ BEGIN_MESSAGE_MAP(CYutnoriSDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 END_MESSAGE_MAP()
 
-
-// CYutnoriSDlg 메시지 처리기
 BOOL CYutnoriSDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -82,8 +74,8 @@ BOOL CYutnoriSDlg::OnInitDialog()
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
 	}
-	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
-	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
+	SetIcon(m_hIcon, TRUE);	
+	SetIcon(m_hIcon, FALSE);
 
 	/*(1) 소켓을 만들고 (4)서버가 요청을 듣는다*/
 	m_pListenSocket = new CListenSocket;
@@ -94,7 +86,6 @@ BOOL CYutnoriSDlg::OnInitDialog()
 	else AfxMessageBox(_T("ERROR: Failed to create a listen socket.")); //ex. 메모리가 꽉찬경우
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
-
 void CYutnoriSDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
@@ -107,9 +98,6 @@ void CYutnoriSDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
-// 대화 상자에 최소화 단추를 추가할 경우 아이콘을 그리려면
-//  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 애플리케이션의 경우에는
-//  프레임워크에서 이 작업을 자동으로 수행합니다.
 void CYutnoriSDlg::OnPaint()
 {
 	if (IsIconic())
@@ -134,25 +122,20 @@ void CYutnoriSDlg::OnPaint()
 		CDialogEx::OnPaint();
 	}
 }
-// 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
-//  이 함수를 호출합니다.
 HCURSOR CYutnoriSDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 BOOL CYutnoriSDlg::DestroyWindow()
 {
-	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
 	POSITION pos = m_pListenSocket->m_pChildSocketList.GetHeadPosition();
 	CChildSocket* pChild = NULL;
 	while (pos != NULL) {
 		pChild = (CChildSocket*)(m_pListenSocket->m_pChildSocketList.GetNext(pos));
 		if (pChild != NULL) { pChild->ShutDown(); pChild->Close(); delete pChild; }
 	}
-
 	m_pListenSocket->ShutDown(); //소켓중지(listen을 멈춤)
 	m_pListenSocket->Close(); // 소켓종료
 	delete m_pListenSocket; //소켓의 목록을 지움
-
 	return CDialogEx::DestroyWindow();
 }
