@@ -41,9 +41,9 @@ void CChildSocket::OnReceive(int nErrorCode)
 	CSocket::OnReceive(nErrorCode);
 }
 
-CString CChildSocket::FindNickName(LPCTSTR szUrl)
+CString CChildSocket::FindNickName(LPCTSTR message)
 {
-	CString findnickname(szUrl);
+	CString findnickname(message);
 	int findIndexR = findnickname.Find(": ");
 	if (findIndexR <= 0) { return _T("invalid_request"); }
 	findnickname = findnickname.Left(findIndexR);
