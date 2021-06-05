@@ -14,8 +14,7 @@
 #endif
 
 
-// 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
-
+/* 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.*/
 class CAboutDlg : public CDialogEx
 {
 public:
@@ -33,11 +32,9 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 };
-
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
 {
 }
-
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -48,42 +45,30 @@ END_MESSAGE_MAP()
 
 
 // CYutnoriSDlg 대화 상자
-
-
-
 CYutnoriSDlg::CYutnoriSDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_YUTNORI_S_DIALOG, pParent)
 	, m_pListenSocket(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
-
 void CYutnoriSDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT1, m_ctrlEdit);
 }
-
 BEGIN_MESSAGE_MAP(CYutnoriSDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_EN_CHANGE(IDC_EDIT1, &CYutnoriSDlg::OnEnChangeEdit1)
 END_MESSAGE_MAP()
 
 
 // CYutnoriSDlg 메시지 처리기
-
 BOOL CYutnoriSDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-
-	// 시스템 메뉴에 "정보..." 메뉴 항목을 추가합니다.
-
-	// IDM_ABOUTBOX는 시스템 명령 범위에 있어야 합니다.
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
-
 	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	if (pSysMenu != nullptr)
 	{
@@ -97,25 +82,16 @@ BOOL CYutnoriSDlg::OnInitDialog()
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
 	}
-
-	// 이 대화 상자의 아이콘을 설정합니다.  응용 프로그램의 주 창이 대화 상자가 아닐 경우에는
-	//  프레임워크가 이 작업을 자동으로 수행합니다.
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
-	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	/*(1) 소켓을 만들고 (4)서버가 요청을 듣는다*/
 	m_pListenSocket = new CListenSocket;
 	if (m_pListenSocket->Create(7000, SOCK_STREAM)) {
-		if (m_pListenSocket->Listen()) {
-			m_ctrlEdit.ReplaceSel(_T("[서버] Port(7000)이 Listen 소켓으로 열렸습니다.\r\n"));
-		}
+		if (m_pListenSocket->Listen()) { m_ctrlEdit.ReplaceSel(_T("[서버] Port(7000)이 Listen 소켓으로 열렸습니다.\r\n")); }
 		else AfxMessageBox(_T("ERROR: Failed to LISTEN.")); //이미 포트가 열려있다.
 	}
 	else AfxMessageBox(_T("ERROR: Failed to create a listen socket.")); //ex. 메모리가 꽉찬경우
-
-
-
-
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -131,11 +107,9 @@ void CYutnoriSDlg::OnSysCommand(UINT nID, LPARAM lParam)
 		CDialogEx::OnSysCommand(nID, lParam);
 	}
 }
-
 // 대화 상자에 최소화 단추를 추가할 경우 아이콘을 그리려면
 //  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 애플리케이션의 경우에는
 //  프레임워크에서 이 작업을 자동으로 수행합니다.
-
 void CYutnoriSDlg::OnPaint()
 {
 	if (IsIconic())
@@ -160,14 +134,12 @@ void CYutnoriSDlg::OnPaint()
 		CDialogEx::OnPaint();
 	}
 }
-
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
 //  이 함수를 호출합니다.
 HCURSOR CYutnoriSDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-
 BOOL CYutnoriSDlg::DestroyWindow()
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
@@ -177,20 +149,10 @@ BOOL CYutnoriSDlg::DestroyWindow()
 		pChild = (CChildSocket*)(m_pListenSocket->m_pChildSocketList.GetNext(pos));
 		if (pChild != NULL) { pChild->ShutDown(); pChild->Close(); delete pChild; }
 	}
+
 	m_pListenSocket->ShutDown(); //소켓중지(listen을 멈춤)
 	m_pListenSocket->Close(); // 소켓종료
 	delete m_pListenSocket; //소켓의 목록을 지움
 
 	return CDialogEx::DestroyWindow();
-}
-
-
-void CYutnoriSDlg::OnEnChangeEdit1()
-{
-	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
-	// CDialogEx::OnInitDialog() 함수를 재지정 
-	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
-	// 이 알림 메시지를 보내지 않습니다.
-
-	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }

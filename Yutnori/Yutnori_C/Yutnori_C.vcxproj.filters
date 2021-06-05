@@ -18,9 +18,6 @@
     <ClInclude Include="Yutnori_C.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Yutnori_CDlg.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -36,13 +33,7 @@
     <ClInclude Include="CClientSocket.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="CYutnoriStart.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="CNaverOAuthDlg.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="CBoardDlg.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="CYutnoriBoard.h">
@@ -56,22 +47,13 @@
     <ClCompile Include="Yutnori_C.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Yutnori_CDlg.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CClientSocket.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="CYutnoriStart.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="CNaverOAuthDlg.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="CBoardDlg.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="CYutnoriBoard.cpp">

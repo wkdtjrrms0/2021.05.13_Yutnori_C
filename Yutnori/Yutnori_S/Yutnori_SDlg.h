@@ -34,7 +34,6 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnEnChangeEdit1();
 	CEdit m_ctrlEdit;
 	CListenSocket* m_pListenSocket;
 	virtual BOOL DestroyWindow();

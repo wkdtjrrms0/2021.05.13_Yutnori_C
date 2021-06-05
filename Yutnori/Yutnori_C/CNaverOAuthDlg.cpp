@@ -5,7 +5,6 @@
 #include "CNaverOAuthDlg.h"
 #include <afxinet.h> 
 #include <string>
-#include "CYutnoriStart.h"
 #include <atlstr.h>
 #include "locale.h"
 
