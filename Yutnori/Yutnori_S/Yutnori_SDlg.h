@@ -5,7 +5,7 @@
 #pragma once
 #include "afxwin.h"
 #include "CListenSocket.h"
-
+#include <mysql.h>
 
 // CYutnoriSDlg 대화 상자
 class CYutnoriSDlg : public CDialogEx
@@ -34,7 +34,11 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
+	MYSQL m_mysql;
 	CEdit m_ctrlEdit;
 	CListenSocket* m_pListenSocket;
+	bool mysqlConnect();
+	bool mysqlAccess(CString strMessage);
+	bool isValidUser(CString strUsername, CString strPassword);
 	virtual BOOL DestroyWindow();
 };

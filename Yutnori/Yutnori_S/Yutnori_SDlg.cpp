@@ -77,13 +77,27 @@ BOOL CYutnoriSDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);	
 	SetIcon(m_hIcon, FALSE);
 
-	/*(1) 소켓을 만들고 (4)서버가 요청을 듣는다*/
+	this->m_ctrlEdit.ReplaceSel(_T("MySQL 서버와 연결되었습니다.\r\n"));
 	m_pListenSocket = new CListenSocket;
-	if (m_pListenSocket->Create(7000, SOCK_STREAM)) {
-		if (m_pListenSocket->Listen()) { m_ctrlEdit.ReplaceSel(_T("[서버] Port(7000)이 Listen 소켓으로 열렸습니다.\r\n")); }
-		else AfxMessageBox(_T("ERROR: Failed to LISTEN.")); //이미 포트가 열려있다.
+	if (m_pListenSocket->StartServer(7000)) {
+		m_ctrlEdit.ReplaceSel(_T("Port(7000)이 Listen 소켓으로 열렸습니다.\r\n"));
 	}
-	else AfxMessageBox(_T("ERROR: Failed to create a listen socket.")); //ex. 메모리가 꽉찬경우
+	else AfxMessageBox(_T("ERROR: Failed to LISTEN.")); // 이미 포트가 열려있다!
+
+
+	/*(1) 서버와 연결하고, 소켓을 만듬 (4)서버가 요청을 듣는다*/
+	/*
+	if (mysqlConnect()) {
+		this->m_ctrlEdit.ReplaceSel(_T("MySQL 서버와 연결되었습니다.\r\n"));
+		m_pListenSocket = new CListenSocket;
+		if (m_pListenSocket->StartServer(7000)) {
+			m_ctrlEdit.ReplaceSel(_T("Port(7000)이 Listen 소켓으로 열렸습니다.\r\n"));
+		}
+		else AfxMessageBox(_T("ERROR: Failed to LISTEN.")); // 이미 포트가 열려있다!
+	}
+	else AfxMessageBox(_T("ERROR: Failed to create a listen socket."));
+	*/
+	
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 void CYutnoriSDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -126,6 +140,52 @@ HCURSOR CYutnoriSDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
+
+bool CYutnoriSDlg::mysqlConnect()
+{
+	mysql_init(&m_mysql);
+	AfxMessageBox(_T("연결"));
+	MYSQL* conn = mysql_real_connect(&m_mysql, "localhost", "root", "qlalf2603!", "db1", 3306, (char*)NULL, 0);
+	if (conn == NULL) {	// 만약 연결에 실패하면,
+		AfxMessageBox((LPCTSTR)mysql_error(&m_mysql));
+		::PostQuitMessage(0); return FALSE;
+	}
+	
+	mysql_set_character_set(&m_mysql, "euckr");	// 연결 문자집합을 지정합니다.
+	return TRUE;
+}
+
+bool CYutnoriSDlg::mysqlAccess(CString strMessage)
+{
+	//	CString strMessage(_T("ID=홍길동 PW=2222"));
+	if (strMessage.Left(3) != _T("ID=")) return false;
+	CString strUsername = strMessage.Mid(3, 6);
+	CString strPassword = strMessage.Mid(13, 4);
+	if (this->isValidUser(strUsername, strPassword)) {
+		CString str; str.Format(_T("ID= User=U\r\n"));
+		this->m_ctrlEdit.ReplaceSel(str);
+		m_pListenSocket->Broadcast(str);
+		return true;
+	}
+	else {
+		CString str; str.Format(_T("error: ID(%s) or PW is incorrect!\r\n"), strUsername);
+		this->m_ctrlEdit.ReplaceSel(str);
+		m_pListenSocket->Broadcast(str);	// 공사중 = 접속자에게만 전송하는 것으로 수정 요망
+	}
+	return false;
+}
+
+bool CYutnoriSDlg::isValidUser(CString strUsername, CString strPassword)
+{
+	CString query;
+	query.Format(_T("select * from test"));
+	int status = mysql_query(&m_mysql, query);	// ID와 PW가 DB와 일치한가?
+	MYSQL_RES* result = mysql_store_result(&m_mysql);
+	int nRowCount = mysql_num_rows(result);
+	return nRowCount;
+}
+
+
 BOOL CYutnoriSDlg::DestroyWindow()
 {
 	POSITION pos = m_pListenSocket->m_pChildSocketList.GetHeadPosition();
@@ -137,5 +197,7 @@ BOOL CYutnoriSDlg::DestroyWindow()
 	m_pListenSocket->ShutDown(); //소켓중지(listen을 멈춤)
 	m_pListenSocket->Close(); // 소켓종료
 	delete m_pListenSocket; //소켓의 목록을 지움
+	mysql_close(&m_mysql);
+	m_pListenSocket->StopServer();
 	return CDialogEx::DestroyWindow();
 }

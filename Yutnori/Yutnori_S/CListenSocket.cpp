@@ -18,7 +18,7 @@ void CListenSocket::OnAccept(int nErrorCode)
 	pChild->Send(str.GetBuffer(), str.GetLength());
 	pChild->m_pListenSocket = this; //CListenSocket 객체의 주소를 CChildSocket 객체에 저장한다.
 	int count = m_pChildSocketList.GetCount();
-	CString gamestart = _T("[Game] 게임이 시작됩니다!\r\n");
+	CString gamestart = _T("[Status] 게임이 시작됩니다!\r\n");
 	CString gamewait = _T("[Status] 상대방이 접속할때까지 대기합니다....\r\n");
 	if (count == 1) { Broadcast(gamewait); pMain->m_ctrlEdit.ReplaceSel(gamewait); } //대기할때
 	if (count == 2) { Broadcast(gamestart); pMain->m_ctrlEdit.ReplaceSel(gamestart); } //게임시작할때
@@ -33,4 +33,28 @@ void CListenSocket::Broadcast(CString strMessage)
 		CChildSocket* pChild = (CChildSocket*)m_pChildSocketList.GetNext(pos);
 		if (pChild != NULL) pChild->Send(strMessage.GetBuffer(), strMessage.GetLength());
 	}
+}
+
+/*DB서버를 시작함*/
+BOOL CListenSocket::StartServer(UINT port)
+{
+	if (this->Create(port, SOCK_STREAM)) {
+		if (this->Listen()) return TRUE;
+		else AfxMessageBox(_T("ERROR: Failed to LISTEN.")); // 이미 포트가 열려있다!
+	}
+	else AfxMessageBox(_T("ERROR: Failed to create listen socket."));
+	return FALSE;
+}
+
+/*DB서버를 멈춤*/
+void CListenSocket::StopServer()
+{
+	POSITION pos = m_pChildSocketList.GetHeadPosition();
+	CChildSocket* pChild = NULL;
+	while (pos != NULL) {
+		pChild = (CChildSocket*)m_pChildSocketList.GetNext(pos);
+		if (pChild != NULL) { pChild->ShutDown(); pChild->Close(); delete pChild; }
+	}
+	this->ShutDown();
+	this->Close();
 }

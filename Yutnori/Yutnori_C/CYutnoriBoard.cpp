@@ -127,7 +127,7 @@ void CYutnoriBoard::OnBnClickedButton4()
 	}
 }
 
-/*[2-1] 게임준비버튼입니다.*/
+/*[2-1] 게임준비, 기권하기버튼입니다.*/
 void CYutnoriBoard::OnBnClickedButton1()
 {
 	if (SelectOAuth == 1) {
