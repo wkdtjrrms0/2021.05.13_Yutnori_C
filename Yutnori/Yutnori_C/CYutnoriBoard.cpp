@@ -23,6 +23,7 @@ CYutnoriBoard::CYutnoriBoard(CWnd* pParent /*=nullptr*/)
 	, m_Radio(-1)
 {
 	m_nickname = _T("");
+	m_nid = _T("");
 	SelectOAuth = 0;
 	IsThrow = 0;
 	YutNum = 0;
@@ -51,6 +52,7 @@ BEGIN_MESSAGE_MAP(CYutnoriBoard, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON2, &CYutnoriBoard::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CYutnoriBoard::OnBnClickedButton3)
 	ON_BN_CLICKED(IDCANCEL, &CYutnoriBoard::OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_BUTTON5, &CYutnoriBoard::OnBnClickedButton5)
 END_MESSAGE_MAP()
 
 CNaverOAuthDlg dlg; //네이버 로그인 객체 생성
@@ -110,6 +112,7 @@ void CYutnoriBoard::OnBnClickedButton4()
 		if (dlg.IsLogin == 1) { //로그인 성공시
 			SelectOAuth = 1;
 			m_nickname = dlg.m_NaverNickName;
+			m_nid = dlg.m_NaverID;
 			SetDlgItemText(IDC_BUTTON4, _T("로그아웃"));
 			SetDlgItemText(IDC_STATIC, _T(m_nickname + "님 \n 반갑습니다."));
 		}
@@ -356,21 +359,21 @@ void CYutnoriBoard::PaintPiece(int x1, int x2, int x3, int x4, int x5, int x6, i
 BOOL CYutnoriBoard::Catch(int cx1, int cx2, int cx3, int cx4, int cx5, int cx6, int cx7, int cx8, int cy1, int cy2, int cy3, int cy4, int cy5, int cy6, int cy7, int cy8)
 {
 	if ((cx1 == cx5) && (cy1 == cy5) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg4.x = FIRSTX; dlg4.y = FIRSTY; dlg4.catched = 1; return TRUE; }
-	else if ((cx1 == cx6) && (cy1 == cy6) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg5.x = FIRSTX; dlg5.y = FIRSTY; dlg5.catched = 1; return TRUE;}
-	else if ((cx1 == cx7) && (cy1 == cy7) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg6.x = FIRSTX; dlg6.y = FIRSTY; dlg6.catched = 1; return TRUE;}
-	else if ((cx1 == cx8) && (cy1 == cy8) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg7.x = FIRSTX; dlg7.y = FIRSTY; dlg7.catched = 1; return TRUE;}
-	else if ((cx2 == cx5) && (cy2 == cy5) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg4.x = FIRSTX; dlg4.y = FIRSTY; dlg4.catched = 1; return TRUE;}
-	else if ((cx2 == cx6) && (cy2 == cy6) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg5.x = FIRSTX; dlg5.y = FIRSTY; dlg5.catched = 1; return TRUE;}
-	else if ((cx2 == cx7) && (cy2 == cy7) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg6.x = FIRSTX; dlg6.y = FIRSTY; dlg6.catched = 1; return TRUE;}
-	else if ((cx2 == cx8) && (cy2 == cy8) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg7.x = FIRSTX; dlg7.y = FIRSTY; dlg7.catched = 1; return TRUE;}
-	else if ((cx3 == cx5) && (cy3 == cy5) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg4.x = FIRSTX; dlg4.y = FIRSTY; dlg4.catched = 1; return TRUE;}
-	else if ((cx3 == cx6) && (cy3 == cy6) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg5.x = FIRSTX; dlg5.y = FIRSTY; dlg5.catched = 1; return TRUE;}
-	else if ((cx3 == cx7) && (cy3 == cy7) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg6.x = FIRSTX; dlg6.y = FIRSTY; dlg6.catched = 1; return TRUE;}
-	else if ((cx3 == cx8) && (cy3 == cy8) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg7.x = FIRSTX; dlg7.y = FIRSTY; dlg7.catched = 1; return TRUE;}
-	else if ((cx4 == cx5) && (cy4 == cy5) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg4.x = FIRSTX; dlg4.y = FIRSTY; dlg4.catched = 1; return TRUE;}
-	else if ((cx4 == cx6) && (cy4 == cy6) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg5.x = FIRSTX; dlg5.y = FIRSTY; dlg5.catched = 1; return TRUE;}
-	else if ((cx4 == cx7) && (cy4 == cy7) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg6.x = FIRSTX; dlg6.y = FIRSTY; dlg6.catched = 1; return TRUE;}
-	else if ((cx4 == cx8) && (cy4 == cy8) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg7.x = FIRSTX; dlg7.y = FIRSTY; dlg7.catched = 1; return TRUE;}
+	if ((cx1 == cx6) && (cy1 == cy6) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg5.x = FIRSTX; dlg5.y = FIRSTY; dlg5.catched = 1; return TRUE;}
+	if ((cx1 == cx7) && (cy1 == cy7) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg6.x = FIRSTX; dlg6.y = FIRSTY; dlg6.catched = 1; return TRUE;}
+	if ((cx1 == cx8) && (cy1 == cy8) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg7.x = FIRSTX; dlg7.y = FIRSTY; dlg7.catched = 1; return TRUE;}
+	if ((cx2 == cx5) && (cy2 == cy5) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg4.x = FIRSTX; dlg4.y = FIRSTY; dlg4.catched = 1; return TRUE;}
+	if ((cx2 == cx6) && (cy2 == cy6) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg5.x = FIRSTX; dlg5.y = FIRSTY; dlg5.catched = 1; return TRUE;}
+	if ((cx2 == cx7) && (cy2 == cy7) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg6.x = FIRSTX; dlg6.y = FIRSTY; dlg6.catched = 1; return TRUE;}
+	if ((cx2 == cx8) && (cy2 == cy8) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg7.x = FIRSTX; dlg7.y = FIRSTY; dlg7.catched = 1; return TRUE;}
+	if ((cx3 == cx5) && (cy3 == cy5) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg4.x = FIRSTX; dlg4.y = FIRSTY; dlg4.catched = 1; return TRUE;}
+	if ((cx3 == cx6) && (cy3 == cy6) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg5.x = FIRSTX; dlg5.y = FIRSTY; dlg5.catched = 1; return TRUE;}
+	if ((cx3 == cx7) && (cy3 == cy7) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg6.x = FIRSTX; dlg6.y = FIRSTY; dlg6.catched = 1; return TRUE;}
+	if ((cx3 == cx8) && (cy3 == cy8) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg7.x = FIRSTX; dlg7.y = FIRSTY; dlg7.catched = 1; return TRUE;}
+	if ((cx4 == cx5) && (cy4 == cy5) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg4.x = FIRSTX; dlg4.y = FIRSTY; dlg4.catched = 1; return TRUE;}
+	if ((cx4 == cx6) && (cy4 == cy6) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg5.x = FIRSTX; dlg5.y = FIRSTY; dlg5.catched = 1; return TRUE;}
+	if ((cx4 == cx7) && (cy4 == cy7) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg6.x = FIRSTX; dlg6.y = FIRSTY; dlg6.catched = 1; return TRUE;}
+	if ((cx4 == cx8) && (cy4 == cy8) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg7.x = FIRSTX; dlg7.y = FIRSTY; dlg7.catched = 1; return TRUE;}
 	return FALSE;
 }
 
@@ -378,21 +381,21 @@ BOOL CYutnoriBoard::Catch(int cx1, int cx2, int cx3, int cx4, int cx5, int cx6, 
 BOOL CYutnoriBoard::CatchMe(int cx1, int cx2, int cx3, int cx4, int cx5, int cx6, int cx7, int cx8, int cy1, int cy2, int cy3, int cy4, int cy5, int cy6, int cy7, int cy8)
 {
 	if ((cx1 == cx5) && (cy1 == cy5) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg0.x = FIRSTX; dlg0.y = FIRSTY; dlg0.catched = 1; return TRUE; }
-	else if ((cx1 == cx6) && (cy1 == cy6) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg1.x = FIRSTX; dlg1.y = FIRSTY; dlg1.catched = 1; return TRUE; }
-	else if ((cx1 == cx7) && (cy1 == cy7) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg2.x = FIRSTX; dlg2.y = FIRSTY; dlg2.catched = 1; return TRUE; }
-	else if ((cx1 == cx8) && (cy1 == cy8) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg3.x = FIRSTX; dlg3.y = FIRSTY; dlg3.catched = 1; return TRUE; }
-	else if ((cx2 == cx5) && (cy2 == cy5) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg0.x = FIRSTX; dlg0.y = FIRSTY; dlg0.catched = 1; return TRUE; }
-	else if ((cx2 == cx6) && (cy2 == cy6) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg1.x = FIRSTX; dlg1.y = FIRSTY; dlg1.catched = 1; return TRUE; }
-	else if ((cx2 == cx7) && (cy2 == cy7) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg2.x = FIRSTX; dlg2.y = FIRSTY; dlg2.catched = 1; return TRUE; }
-	else if ((cx2 == cx8) && (cy2 == cy8) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg3.x = FIRSTX; dlg3.y = FIRSTY; dlg3.catched = 1; return TRUE; }
-	else if ((cx3 == cx5) && (cy3 == cy5) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg0.x = FIRSTX; dlg0.y = FIRSTY; dlg0.catched = 1; return TRUE; }
-	else if ((cx3 == cx6) && (cy3 == cy6) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg1.x = FIRSTX; dlg1.y = FIRSTY; dlg1.catched = 1; return TRUE; }
-	else if ((cx3 == cx7) && (cy3 == cy7) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg2.x = FIRSTX; dlg2.y = FIRSTY; dlg2.catched = 1; return TRUE; }
-	else if ((cx3 == cx8) && (cy3 == cy8) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg3.x = FIRSTX; dlg3.y = FIRSTY; dlg3.catched = 1; return TRUE; }
-	else if ((cx4 == cx5) && (cy4 == cy5) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg0.x = FIRSTX; dlg0.y = FIRSTY; dlg0.catched = 1; return TRUE; }
-	else if ((cx4 == cx6) && (cy4 == cy6) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg1.x = FIRSTX; dlg1.y = FIRSTY; dlg1.catched = 1; return TRUE; }
-	else if ((cx4 == cx7) && (cy4 == cy7) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg2.x = FIRSTX; dlg2.y = FIRSTY; dlg2.catched = 1; return TRUE; }
-	else if ((cx4 == cx8) && (cy4 == cy8) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg3.x = FIRSTX; dlg3.y = FIRSTY; dlg3.catched = 1; return TRUE; }
+	if ((cx1 == cx6) && (cy1 == cy6) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg1.x = FIRSTX; dlg1.y = FIRSTY; dlg1.catched = 1; return TRUE; }
+	if ((cx1 == cx7) && (cy1 == cy7) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg2.x = FIRSTX; dlg2.y = FIRSTY; dlg2.catched = 1; return TRUE; }
+	if ((cx1 == cx8) && (cy1 == cy8) && (cx1 != FIRSTX) && (cy1 != FIRSTY) && (cx1 != -1) && (cy1 != -1)) { dlg3.x = FIRSTX; dlg3.y = FIRSTY; dlg3.catched = 1; return TRUE; }
+	if ((cx2 == cx5) && (cy2 == cy5) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg0.x = FIRSTX; dlg0.y = FIRSTY; dlg0.catched = 1; return TRUE; }
+	if ((cx2 == cx6) && (cy2 == cy6) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg1.x = FIRSTX; dlg1.y = FIRSTY; dlg1.catched = 1; return TRUE; }
+	if ((cx2 == cx7) && (cy2 == cy7) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg2.x = FIRSTX; dlg2.y = FIRSTY; dlg2.catched = 1; return TRUE; }
+	if ((cx2 == cx8) && (cy2 == cy8) && (cx2 != FIRSTX) && (cy2 != FIRSTY) && (cx2 != -1) && (cy2 != -1)) { dlg3.x = FIRSTX; dlg3.y = FIRSTY; dlg3.catched = 1; return TRUE; }
+	if ((cx3 == cx5) && (cy3 == cy5) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg0.x = FIRSTX; dlg0.y = FIRSTY; dlg0.catched = 1; return TRUE; }
+	if ((cx3 == cx6) && (cy3 == cy6) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg1.x = FIRSTX; dlg1.y = FIRSTY; dlg1.catched = 1; return TRUE; }
+	if ((cx3 == cx7) && (cy3 == cy7) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg2.x = FIRSTX; dlg2.y = FIRSTY; dlg2.catched = 1; return TRUE; }
+	if ((cx3 == cx8) && (cy3 == cy8) && (cx3 != FIRSTX) && (cy3 != FIRSTY) && (cx3 != -1) && (cy3 != -1)) { dlg3.x = FIRSTX; dlg3.y = FIRSTY; dlg3.catched = 1; return TRUE; }
+	if ((cx4 == cx5) && (cy4 == cy5) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg0.x = FIRSTX; dlg0.y = FIRSTY; dlg0.catched = 1; return TRUE; }
+	if ((cx4 == cx6) && (cy4 == cy6) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg1.x = FIRSTX; dlg1.y = FIRSTY; dlg1.catched = 1; return TRUE; }
+	if ((cx4 == cx7) && (cy4 == cy7) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg2.x = FIRSTX; dlg2.y = FIRSTY; dlg2.catched = 1; return TRUE; }
+	if ((cx4 == cx8) && (cy4 == cy8) && (cx4 != FIRSTX) && (cy4 != FIRSTY) && (cx4 != -1) && (cy4 != -1)) { dlg3.x = FIRSTX; dlg3.y = FIRSTY; dlg3.catched = 1; return TRUE; }
 	return FALSE;
 }
 
@@ -441,4 +444,15 @@ void CYutnoriBoard::InitPiece()
 	dlg7.x = FIRSTX; dlg7.y = FIRSTY; dlg7.catched = 0; dlg7.count = 0;
 	AfxMessageBox("게임이 끝났습니다.");
 	PaintPiece(dlg0.x, dlg1.x, dlg2.x, dlg3.x, dlg4.x, dlg5.x, dlg6.x, dlg7.x, dlg0.y, dlg1.y, dlg2.y, dlg3.y, dlg4.y, dlg5.y, dlg6.y, dlg7.y);
+}
+
+/*랭킹조회하는 버튼*/
+void CYutnoriBoard::OnBnClickedButton5()
+{
+	if ((SelectOAuth == 1) && (IsGamebutton == 1) && (ConnectError != -1)){
+		CString DataRead;
+		DataRead.Format(_T("[DataRead]\r\n"));
+		m_pClientSocket->Send(DataRead, DataRead.GetLength());
+	}
+	else { AfxMessageBox("로그인과 게임준비를 해야 조회할 수 있습니다."); }
 }

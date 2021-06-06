@@ -30,6 +30,7 @@ public:
 	int ConnectError; //연결에러체크
 	CString m_strMessage; //채팅메시지
 	CString m_nickname; //닉네임
+	CString m_nid; //네이버고유ID
 	CString m_strAddress; //접속하고자하는 IP주소
 	CStatic m_Text; //상태문자
 	CEdit m_ctrlEdit; //채팅창
@@ -49,4 +50,5 @@ public:
 	void PaintPiece(int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8, int y1, int y2, int y3, int y4, int y5, int y6, int y7, int y8); //해당좌표그림
 	void victoryCheck(int ax, int ay, int bx, int by, int cx, int cy, int dx, int dy); //승리여부체크
 	void InitPiece(); //승리 or 패배시 이어서 게임할 수 있도록 초기화
+	afx_msg void OnBnClickedButton5();
 };

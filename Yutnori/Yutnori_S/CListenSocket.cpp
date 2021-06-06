@@ -35,7 +35,7 @@ void CListenSocket::Broadcast(CString strMessage)
 	}
 }
 
-/*DB서버를 시작함*/
+/*서버를 시작함*/
 BOOL CListenSocket::StartServer(UINT port)
 {
 	if (this->Create(port, SOCK_STREAM)) {
@@ -46,7 +46,7 @@ BOOL CListenSocket::StartServer(UINT port)
 	return FALSE;
 }
 
-/*DB서버를 멈춤*/
+/*서버를 멈춤*/
 void CListenSocket::StopServer()
 {
 	POSITION pos = m_pChildSocketList.GetHeadPosition();

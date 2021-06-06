@@ -32,11 +32,20 @@ void CChildSocket::OnReceive(int nErrorCode)
 	} break;
 	default:
 		szBuffer[nRead] = _T('\0');
-		CString str; str.Format(_T("%s"), szBuffer);
+		CString str(szBuffer);
 		CString nickname = FindNickName(str);
 		CYutnoriSDlg* pMain = (CYutnoriSDlg*)AfxGetMainWnd();
 		pMain->m_ctrlEdit.ReplaceSel(str); //수신한 메시지를 화면에 보여준다.
-		m_pListenSocket->Broadcast(str); //모든 클라이언트에게 송신한다.
+
+		if (str.Left(11) == _T("[DataInput]")) {
+			pMain->InputData(str);
+		}
+		else if (str.Left(10) == _T("[DataRead]")) {
+			pMain->ReadData();
+		}
+		else {
+			m_pListenSocket->Broadcast(str);	// 모든 클라이언트에게 송신한다.
+		}
 	}
 	CSocket::OnReceive(nErrorCode);
 }

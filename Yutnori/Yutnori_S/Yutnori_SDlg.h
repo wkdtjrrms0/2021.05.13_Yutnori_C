@@ -39,6 +39,9 @@ public:
 	CListenSocket* m_pListenSocket;
 	bool mysqlConnect();
 	bool mysqlAccess(CString strMessage);
-	bool isValidUser(CString strUsername, CString strPassword);
+	bool IsValidID(CString strUsername, CString strPassword);
+	void InputData(CString strMessage);
+	void ReadData();
 	virtual BOOL DestroyWindow();
+	virtual void PostNcDestroy();
 };

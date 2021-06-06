@@ -77,16 +77,7 @@ BOOL CYutnoriSDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);	
 	SetIcon(m_hIcon, FALSE);
 
-	this->m_ctrlEdit.ReplaceSel(_T("MySQL 서버와 연결되었습니다.\r\n"));
-	m_pListenSocket = new CListenSocket;
-	if (m_pListenSocket->StartServer(7000)) {
-		m_ctrlEdit.ReplaceSel(_T("Port(7000)이 Listen 소켓으로 열렸습니다.\r\n"));
-	}
-	else AfxMessageBox(_T("ERROR: Failed to LISTEN.")); // 이미 포트가 열려있다!
-
-
 	/*(1) 서버와 연결하고, 소켓을 만듬 (4)서버가 요청을 듣는다*/
-	/*
 	if (mysqlConnect()) {
 		this->m_ctrlEdit.ReplaceSel(_T("MySQL 서버와 연결되었습니다.\r\n"));
 		m_pListenSocket = new CListenSocket;
@@ -96,8 +87,6 @@ BOOL CYutnoriSDlg::OnInitDialog()
 		else AfxMessageBox(_T("ERROR: Failed to LISTEN.")); // 이미 포트가 열려있다!
 	}
 	else AfxMessageBox(_T("ERROR: Failed to create a listen socket."));
-	*/
-	
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 void CYutnoriSDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -141,50 +130,63 @@ HCURSOR CYutnoriSDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+/*DB연결*/
 bool CYutnoriSDlg::mysqlConnect()
 {
 	mysql_init(&m_mysql);
-	AfxMessageBox(_T("연결"));
-	MYSQL* conn = mysql_real_connect(&m_mysql, "localhost", "root", "qlalf2603!", "db1", 3306, (char*)NULL, 0);
+	MYSQL* conn = mysql_real_connect(&m_mysql, "localhost", "root", "pw01", "db1", 3306, (char*)NULL, 0);
 	if (conn == NULL) {	// 만약 연결에 실패하면,
 		AfxMessageBox((LPCTSTR)mysql_error(&m_mysql));
 		::PostQuitMessage(0); return FALSE;
 	}
-	
 	mysql_set_character_set(&m_mysql, "euckr");	// 연결 문자집합을 지정합니다.
 	return TRUE;
 }
 
-bool CYutnoriSDlg::mysqlAccess(CString strMessage)
+/*DB에 값넣음*/
+void CYutnoriSDlg::InputData(CString str)
 {
-	//	CString strMessage(_T("ID=홍길동 PW=2222"));
-	if (strMessage.Left(3) != _T("ID=")) return false;
-	CString strUsername = strMessage.Mid(3, 6);
-	CString strPassword = strMessage.Mid(13, 4);
-	if (this->isValidUser(strUsername, strPassword)) {
-		CString str; str.Format(_T("ID= User=U\r\n"));
-		this->m_ctrlEdit.ReplaceSel(str);
-		m_pListenSocket->Broadcast(str);
-		return true;
-	}
-	else {
-		CString str; str.Format(_T("error: ID(%s) or PW is incorrect!\r\n"), strUsername);
-		this->m_ctrlEdit.ReplaceSel(str);
-		m_pListenSocket->Broadcast(str);	// 공사중 = 접속자에게만 전송하는 것으로 수정 요망
-	}
-	return false;
-}
-
-bool CYutnoriSDlg::isValidUser(CString strUsername, CString strPassword)
-{
+	CString NaverID = str.Mid(str.Find("NaverID: ") + 9, str.Find(", NaverNick") - str.Find("NaverID: ") - 9); //ID만 추출
+	CString NaverNick = str.Mid(str.Find("NaverNick: ") + 11, str.GetLength() - str.Find("NaverNick: ") - 13); //닉네임만 추출
 	CString query;
-	query.Format(_T("select * from test"));
-	int status = mysql_query(&m_mysql, query);	// ID와 PW가 DB와 일치한가?
+	query.Format(_T("select * from member where NaverID='%s'"), NaverID); //ID가 있는건지 찾아봄
+	mysql_query(&m_mysql, query);
+	int status = mysql_query(&m_mysql, query);
 	MYSQL_RES* result = mysql_store_result(&m_mysql);
 	int nRowCount = mysql_num_rows(result);
-	return nRowCount;
+	if (nRowCount == 0) { //ID가 없으면
+		query.Format(_T("insert into member (NaverID, NaverNick) values ('%s', '%s')"), NaverID, NaverNick);
+		mysql_query(&m_mysql, query);	// ID, 닉네임넣음
+	}
+	query.Format(_T("update member set Score = Score + 1 where NaverID='%s'"), NaverID);
+	mysql_query(&m_mysql, query);	// ID가 있으면 값 증가시킴
 }
 
+/*DB에서 값 가져옴*/
+void CYutnoriSDlg::ReadData()
+{
+	CString query; CString str; str = _T("[---TOP 10 랭킹조회---]\r\n");
+	query.Format(_T("select NaverNick, Score from member order by Score DESC;")); //점수로 정렬해서 닉네임, 점수 가져옴
+	mysql_query(&m_mysql, query);
+	MYSQL_RES* result = mysql_store_result(&m_mysql);
+	int nRowCount = mysql_num_rows(result);
+	int nFieldCount = mysql_num_fields(result);
+	if (nRowCount == 0) {
+		str = str + (_T("랭킹에 있는 유저가 없습니다.\r\n"));
+	}
+	else {
+		MYSQL_FIELD* fields = mysql_fetch_fields(result);
+		MYSQL_ROW row;
+		int i = 1;
+		while (row = mysql_fetch_row(result)) {
+			int Score = atoi(row[1]); //Score
+			str.AppendFormat(_T("%d위  닉네임=%s  점수=%d\r\n"), i, row[0], Score);
+			i++;
+		}
+	}
+	this->m_ctrlEdit.ReplaceSel(str);
+	m_pListenSocket->Broadcast(str);
+}
 
 BOOL CYutnoriSDlg::DestroyWindow()
 {
@@ -200,4 +202,11 @@ BOOL CYutnoriSDlg::DestroyWindow()
 	mysql_close(&m_mysql);
 	m_pListenSocket->StopServer();
 	return CDialogEx::DestroyWindow();
+}
+
+
+void CYutnoriSDlg::PostNcDestroy()
+{
+	mysql_close(&m_mysql);
+	CDialogEx::PostNcDestroy();
 }

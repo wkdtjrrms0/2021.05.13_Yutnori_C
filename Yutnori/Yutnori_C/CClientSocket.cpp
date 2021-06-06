@@ -73,6 +73,9 @@ void CClientSocket::OnReceive(int nErrorCode)
 			receivenick = receive.Left(len - 3);
 			if (strcmp(receivenick, pMain->m_nickname) == 0) { //받은 닉네임, 클라이언트닉네임이 같은경우=>나의 승리
 				pMain->m_ctrlEdit.ReplaceSel(_T("게임에 승리하셨습니다.\r\n"));
+				CString win;
+				win.Format(_T("[DataInput] NaverID: %s, NaverNick: %s\r\n"), pMain->m_nid, pMain->m_nickname);
+				Send(win, win.GetLength());  //데이터 보냄.
 				pMain->m_ctrlEdit.ReplaceSel(_T("[Status] 연결 종료\r\n"));
 				this->ShutDown();
 				this->Close();
@@ -96,6 +99,9 @@ void CClientSocket::OnReceive(int nErrorCode)
 			}
 			else if (strcmp(receivenick, pMain->m_nickname) != 0) { //받은 닉네임, 클라이언트닉네임이 다른경우=>나의 승리
 				pMain->m_ctrlEdit.ReplaceSel(_T("게임에 승리하셨습니다.\r\n"));
+				CString win;
+				win.Format(_T("[DataInput] NaverID: %s, NaverNick: %s\r\n"), pMain->m_nid, pMain->m_nickname);
+				Send(win, win.GetLength());  //데이터 보냄.
 				pMain->m_ctrlEdit.ReplaceSel(_T("[Status] 연결 종료\r\n"));
 				this->ShutDown();
 				this->Close();
